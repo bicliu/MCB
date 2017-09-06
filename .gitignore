@@ -1,0 +1,16 @@
+#projects/
+Output/
+Listing/
+*.uvgui.Administrator
+*.uvgui_Administrator.bak
+*.dep
+JLinkSettings.ini
+JLinkLog.txt
+
+.DS_Store
+.vscode/
+.vs/
+bin/
+obj/
+*.userprefs
+
