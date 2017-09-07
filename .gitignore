@@ -4,6 +4,7 @@ Listing/
 *.uvgui.Administrator
 *.uvgui_Administrator.bak
 *.dep
+*.uvgui.DELL
 JLinkSettings.ini
 JLinkLog.txt
 

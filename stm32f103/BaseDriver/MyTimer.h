@@ -15,6 +15,7 @@ typedef struct{
 	FUNC_ITHANDLER    ithandler;
 	uint32_t          arr;
 	uint16_t          psc;
+	uint32_t          count;
 }Tim_Info;
 
 //My Timer tim 6
