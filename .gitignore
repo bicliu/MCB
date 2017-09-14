@@ -1,6 +1,7 @@
 #projects/
 Output/
 Listing/
+*.uvopt
 *.uvgui.Administrator
 *.uvgui_Administrator.bak
 *.dep
