@@ -18,6 +18,12 @@ typedef struct{
 	uint32_t          count;
 }Tim_Info;
 
+extern uint32_t PB1_TIM_ARR;
+extern uint16_t PB1_TIM_PSC;
+extern uint32_t PB2_TIM_ARR;
+extern uint16_t PB2_TIM_PSC;
+extern uint32_t TIM_CLOCK_BASE;
+
 //My Timer tim 6
 #define MYTIMER_ISAPB1      1
 #define MYTIMER_TIM_RCC     RCC_APB1Periph_TIM6

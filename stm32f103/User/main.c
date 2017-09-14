@@ -26,6 +26,7 @@
 
 #include "MyGpio.h"
 #include "MyTimer.h"
+#include "motor_z5.h"
 
 #ifdef USE_STM32100B_EVAL
  #include "stm32100b_eval_lcd.h"
@@ -127,6 +128,9 @@ int main(void)
 	//LED_ON(LED1);
 	//LED_ON(LED2);
 	LED_ON(LED3);
+	
+	M5_Configure();
+	M5_Start();
 	LED_SetFlashing(LED2, LED_FLASHING_ON);
 
   /* Infinite loop */

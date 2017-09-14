@@ -25,6 +25,7 @@
 #include "stm32f10x_it.h"
 
 #include "MyTimer.h"
+#include "motor_z5.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -166,6 +167,11 @@ void SysTick_Handler(void)
 void TIM6_IRQHandler(void)
 {
 	MyTimer_IT_Handler();
+}
+
+void TIM7_IRQHandler(void)
+{
+	M5_TIM_IT_Handler();
 }
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
