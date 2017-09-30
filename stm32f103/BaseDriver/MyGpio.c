@@ -118,3 +118,11 @@ void MyGpio_ResetBits(Gpio_Info port)
 {
 	GPIO_ResetBits(port.gpio, port.pin);
 }
+
+void MyGpio_WriteBit(Gpio_Info port, uint8_t bit)
+{
+	if(bit == 0)
+		GPIO_WriteBit(port.gpio, port.pin, Bit_RESET);
+	else
+		GPIO_WriteBit(port.gpio, port.pin, Bit_SET);
+}

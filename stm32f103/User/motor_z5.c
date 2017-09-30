@@ -69,8 +69,8 @@ void M5_Configure(void)
 	m5_timer.isAPB1 = 1;
 	m5_timer.rcc = RCC_APB1Periph_TIM7;
 	m5_timer.irqn = TIM7_IRQn;
-	m5_timer.itflag = TIM_FLAG_Update;
-	m5_timer.it = TIM_IT_Update;
+	m5_timer.itflag = TIM_FLAG_Update/*TIM_IT_CC1*/;
+	m5_timer.it = TIM_IT_Update/*TIM_IT_CC1*/;
 	m5_timer.cnl = TIMR_CNL_1;
 	m5_timer.ithandler = M5_TIM_IT_Handler;
 	m5_timer.arr = PB1_TIM_ARR;
@@ -97,6 +97,7 @@ void M5_Configure(void)
 void M5_Start(void)
 {
 	Timer_Start(m5_timer);
+	//Timer_Start(m5_pwmTim);
 }
 
 void M5_Stop(void)
@@ -126,7 +127,8 @@ void M5_TIM_IT_Handler(void)
 			m5_t_v = 0;
 
 		/*
-		*/
+		*/MyGpio_WriteBit(m5io_array[0], m5_t_v);
+		//Timer_SetCompare(m5_timer.name, m5_timer.cnl, m5_timer.count%10*10);
 	}
 	TIM_ClearITPendingBit(m5_timer.name, m5_timer.itflag);
 }
@@ -138,6 +140,8 @@ void M5_TIM_PWM_IT_Handler(void)
 	if(TIM_GetITStatus(m5_pwmTim.name, m5_pwmTim.itflag) != RESET)
 	{
 		m5_pwmTim.count++;
+		
+		//Timer_SetCompare(m5_pwmTim.name, m5_pwmTim.cnl, m5_pwmTim.count%10*10);
 		
 		if(m5_iobit == 0)
 			m5_iobit = 1 & m5_t_v;

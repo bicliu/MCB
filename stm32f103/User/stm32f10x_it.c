@@ -169,6 +169,11 @@ void TIM6_IRQHandler(void)
 	MyTimer_IT_Handler();
 }
 
+void TIM2_IRQHandler(void)
+{
+	M5_TIM_PWM_IT_Handler();
+}
+
 void TIM7_IRQHandler(void)
 {
 	M5_TIM_IT_Handler();

@@ -148,3 +148,24 @@ void Timer_PreLoad(TIM_TypeDef * tim, uint8_t chn)
 			break;
 	}
 }
+
+void Timer_SetCompare(TIM_TypeDef * tim, uint8_t chn, uint16_t value)
+{
+	switch(chn)
+	{
+		case TIMR_CNL_1:
+			TIM_SetCompare1(tim, value);
+			break;
+		case TIMR_CNL_2:
+			TIM_SetCompare2(tim, value);
+			break;
+		case TIMR_CNL_3:
+			TIM_SetCompare3(tim, value);
+			break;
+		case TIMR_CNL_4:
+			TIM_SetCompare4(tim, value);
+			break;
+		default:
+			break;
+	}
+}

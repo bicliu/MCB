@@ -45,5 +45,6 @@ void Timer_Init(Tim_Info timer);
 void Timer_Start(Tim_Info timer);
 void Timer_Stop(Tim_Info timer);
 void Timer_PreLoad(TIM_TypeDef * tim, uint8_t chn);
+void Timer_SetCompare(TIM_TypeDef * tim, uint8_t chn, uint16_t value);
 
 #endif
