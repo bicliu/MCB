@@ -127,3 +127,24 @@ void Timer_Stop(Tim_Info timer)
 {
 	TIM_Cmd(timer.name, DISABLE);
 }
+
+void Timer_PreLoad(TIM_TypeDef * tim, uint8_t chn)
+{
+	switch(chn)
+	{
+		case TIMR_CNL_1:
+			TIM_OC1PreloadConfig(tim, TIM_OCPreload_Enable);
+			break;
+		case TIMR_CNL_2:
+			TIM_OC2PreloadConfig(tim, TIM_OCPreload_Enable);
+			break;
+		case TIMR_CNL_3:
+			TIM_OC3PreloadConfig(tim, TIM_OCPreload_Enable);
+			break;
+		case TIMR_CNL_4:
+			TIM_OC4PreloadConfig(tim, TIM_OCPreload_Enable);
+			break;
+		default:
+			break;
+	}
+}

@@ -24,6 +24,11 @@ extern uint32_t PB2_TIM_ARR;
 extern uint16_t PB2_TIM_PSC;
 extern uint32_t TIM_CLOCK_BASE;
 
+#define TIMR_CNL_1          1
+#define TIMR_CNL_2          2
+#define TIMR_CNL_3          3
+#define TIMR_CNL_4          4
+
 //My Timer tim 6
 #define MYTIMER_ISAPB1      1
 #define MYTIMER_TIM_RCC     RCC_APB1Periph_TIM6
@@ -39,5 +44,6 @@ void MyTimer_IT_Handler(void);
 void Timer_Init(Tim_Info timer);
 void Timer_Start(Tim_Info timer);
 void Timer_Stop(Tim_Info timer);
+void Timer_PreLoad(TIM_TypeDef * tim, uint8_t chn);
 
 #endif

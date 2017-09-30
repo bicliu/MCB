@@ -7,11 +7,13 @@ uint16_t z10_array[M5_IO_NUMBER] = {0x210, 0x294, 0x84, 0xA5, 0x21, 0x129, 0x108
 
 Gpio_Info m5io_array[M5_IO_NUMBER];
 Tim_Info  m5_timer;
+Tim_Info  m5_pwmTim;
 
 uint8_t m5_iobit = 0;
 uint8_t m5_clcwise = 0;
 uint8_t m5_model = 0;
 uint8_t m5_Zindex = 0;
+uint8_t m5_t_v = 0;
 
 void M5_Configure(void)
 {
@@ -69,13 +71,27 @@ void M5_Configure(void)
 	m5_timer.irqn = TIM7_IRQn;
 	m5_timer.itflag = TIM_FLAG_Update;
 	m5_timer.it = TIM_IT_Update;
-	//m5_timer.cnl = TIMR_CNL_1;
+	m5_timer.cnl = TIMR_CNL_1;
 	m5_timer.ithandler = M5_TIM_IT_Handler;
 	m5_timer.arr = PB1_TIM_ARR;
 	m5_timer.psc = PB1_TIM_PSC;
 	m5_timer.count = 0;
 	
 	Timer_Init(m5_timer);
+	
+	m5_pwmTim.name = TIM2;
+	m5_pwmTim.isAPB1 = 1;
+	m5_pwmTim.rcc = RCC_APB1Periph_TIM2;
+	m5_pwmTim.irqn = TIM2_IRQn;
+	m5_pwmTim.itflag = TIM_FLAG_Update;
+	m5_pwmTim.it = TIM_IT_Update;
+	m5_pwmTim.cnl = TIMR_CNL_1;
+	m5_pwmTim.ithandler = M5_TIM_PWM_IT_Handler;
+	m5_pwmTim.arr = PB1_TIM_ARR;
+	m5_pwmTim.psc = PB1_TIM_PSC;
+	m5_pwmTim.count = 0;
+	Timer_Init(m5_pwmTim);
+	Timer_PreLoad(m5_pwmTim.name, m5_pwmTim.cnl);
 }
 
 void M5_Start(void)
@@ -88,16 +104,43 @@ void M5_Stop(void)
 	Timer_Stop(m5_timer);
 }
 
+void M5_PWM_Start(void)
+{
+	Timer_Start(m5_pwmTim);
+}
+
+void M5_PWM_Stop(void)
+{
+	Timer_Stop(m5_pwmTim);
+}
+
 void M5_TIM_IT_Handler(void)
 {
-	uint16_t m5_a = 0;
-	uint8_t i = 0;
 	if(TIM_GetITStatus(m5_timer.name, m5_timer.itflag) != RESET)
 	{
 		m5_timer.count++;
+		
+		if(m5_t_v == 0)
+			m5_t_v = 1;
+		else
+			m5_t_v = 0;
 
+		/*
+		*/
+	}
+	TIM_ClearITPendingBit(m5_timer.name, m5_timer.itflag);
+}
+
+void M5_TIM_PWM_IT_Handler(void)
+{
+	uint16_t m5_a = 0;
+	uint8_t i = 0;
+	if(TIM_GetITStatus(m5_pwmTim.name, m5_pwmTim.itflag) != RESET)
+	{
+		m5_pwmTim.count++;
+		
 		if(m5_iobit == 0)
-			m5_iobit = 1;
+			m5_iobit = 1 & m5_t_v;
 		else
 			m5_iobit = 0;
 		
@@ -109,7 +152,7 @@ void M5_TIM_IT_Handler(void)
 		if(0 == m5_model)
 			m5_a = z5_array[m5_Zindex%5];
 		else
-			m5_a = z10_array[m5_Zindex%5];
+			m5_a = z10_array[m5_Zindex%10];
 		for(i = 0; i < 10; i++)
 		{
 			//GPIO_WriteBit(m5io_array[i].gpio,m5io_array[i].pin, (BitAction)(m5_iobit & (m5_a & ((1 << i) >> i))));
@@ -121,6 +164,5 @@ void M5_TIM_IT_Handler(void)
 				MyGpio_ResetBits(m5io_array[i]);
 		}
 	}
-	TIM_ClearITPendingBit(m5_timer.name, m5_timer.itflag);
+	TIM_ClearITPendingBit(m5_pwmTim.name, m5_pwmTim.itflag);
 }
-

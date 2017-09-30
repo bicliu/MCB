@@ -7,6 +7,7 @@
 
 void M5_Configure(void);
 void M5_TIM_IT_Handler(void);
+void M5_TIM_PWM_IT_Handler(void);
 
 void M5_Start(void);
 void M5_Stop(void);
