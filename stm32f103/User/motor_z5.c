@@ -69,8 +69,8 @@ void M5_Configure(void)
 	m5_timer.isAPB1 = 1;
 	m5_timer.rcc = RCC_APB1Periph_TIM7;
 	m5_timer.irqn = TIM7_IRQn;
-	m5_timer.itflag = TIM_FLAG_Update/*TIM_IT_CC1*/;
-	m5_timer.it = TIM_IT_Update/*TIM_IT_CC1*/;
+	m5_timer.itflag = /*TIM_FLAG_Update*/TIM_FLAG_CC1;
+	m5_timer.it = /*TIM_IT_Update*/TIM_IT_CC1;
 	m5_timer.cnl = TIMR_CNL_1;
 	m5_timer.ithandler = M5_TIM_IT_Handler;
 	m5_timer.arr = PB1_TIM_ARR;
@@ -98,6 +98,7 @@ void M5_Start(void)
 {
 	Timer_Start(m5_timer);
 	//Timer_Start(m5_pwmTim);
+	//Timer_test();
 }
 
 void M5_Stop(void)
@@ -117,7 +118,7 @@ void M5_PWM_Stop(void)
 
 void M5_TIM_IT_Handler(void)
 {
-	if(TIM_GetITStatus(m5_timer.name, m5_timer.itflag) != RESET)
+	if(TIM_GetITStatus(m5_timer.name, m5_timer.itflag/*TIM_FLAG_CC1*/) != RESET)
 	{
 		m5_timer.count++;
 		
