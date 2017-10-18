@@ -28,6 +28,7 @@
 extern uint16_t CCR_Val;
 
 void M5_TIM1_Init(uint32_t period);
+void M5_TIM8_Init(uint32_t period);
 void M5_TIM6_Init(uint32_t period);
 void M5_Step(void);
 
