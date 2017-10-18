@@ -33,4 +33,6 @@ void MyGpio_SetBits(Gpio_Info port);
 void MyGpio_ResetBits(Gpio_Info port);
 void MyGpio_WriteBit(Gpio_Info port, uint8_t bit);
 
+/*pwm io*/
+void MyGpio_PWMIO_Init(Gpio_Info port);
 #endif

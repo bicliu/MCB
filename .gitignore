@@ -1,6 +1,8 @@
 #projects/
 Output/
 Listing/
+Listings/
+Objects/
 *.uvopt
 *.uvgui.Administrator
 *.uvgui_Administrator.bak

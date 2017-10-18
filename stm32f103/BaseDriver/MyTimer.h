@@ -46,6 +46,8 @@ void Timer_Start(Tim_Info timer);
 void Timer_Stop(Tim_Info timer);
 void Timer_PreLoad(TIM_TypeDef * tim, uint8_t chn);
 void Timer_SetCompare(TIM_TypeDef * tim, uint8_t chn, uint16_t value);
-void Timer_test(void);
+
+void Timer_test(uint16_t arr,uint16_t psc);
+void TIM1_PWM_Init(u16 arr,u16 psc);
 
 #endif

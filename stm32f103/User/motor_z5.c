@@ -69,8 +69,8 @@ void M5_Configure(void)
 	m5_timer.isAPB1 = 1;
 	m5_timer.rcc = RCC_APB1Periph_TIM7;
 	m5_timer.irqn = TIM7_IRQn;
-	m5_timer.itflag = /*TIM_FLAG_Update*/TIM_FLAG_CC1;
-	m5_timer.it = /*TIM_IT_Update*/TIM_IT_CC1;
+	m5_timer.itflag = TIM_FLAG_Update/*TIM_FLAG_CC1*/;
+	m5_timer.it = TIM_IT_Update/*TIM_IT_CC1*/;
 	m5_timer.cnl = TIMR_CNL_1;
 	m5_timer.ithandler = M5_TIM_IT_Handler;
 	m5_timer.arr = PB1_TIM_ARR;
@@ -170,4 +170,21 @@ void M5_TIM_PWM_IT_Handler(void)
 		}
 	}
 	TIM_ClearITPendingBit(m5_pwmTim.name, m5_pwmTim.itflag);
+}
+
+void m5_test(void)
+{
+	/*Tim_Info t1;
+	m5_pwmTim.name = TIM1;
+	m5_pwmTim.isAPB1 = 0;
+	m5_pwmTim.rcc = RCC_APB2Periph_TIM1;
+	m5_pwmTim.irqn = TIM2_IRQn;
+	m5_pwmTim.itflag = TIM_FLAG_Update;
+	m5_pwmTim.it = TIM_IT_Update;
+	m5_pwmTim.cnl = TIMR_CNL_1;
+	m5_pwmTim.ithandler = M5_TIM_PWM_IT_Handler;
+	m5_pwmTim.arr = PB1_TIM_ARR;
+	m5_pwmTim.psc = PB1_TIM_PSC;
+	m5_pwmTim.count = 0;
+	Timer_Init(m5_pwmTim);*/
 }

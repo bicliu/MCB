@@ -109,6 +109,17 @@ void MyGpio_writeIO_Init(Gpio_Info port)
 	GPIO_Init(port.gpio, &GPIO_InitStructure);
 }
 
+void MyGpio_PWMIO_Init(Gpio_Info port)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	
+	RCC_APB2PeriphClockCmd( port.rcc , ENABLE);
+	GPIO_InitStructure.GPIO_Pin = port.pin;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(port.gpio, &GPIO_InitStructure);
+}
+
 void MyGpio_SetBits(Gpio_Info port)
 {
 	GPIO_SetBits(port.gpio, port.pin);

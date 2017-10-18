@@ -129,8 +129,9 @@ int main(void)
 	//LED_ON(LED2);
 	LED_ON(LED3);
 	
-	M5_Configure();
-	M5_Start();
+	//M5_Configure();
+	//M5_Start();
+	TIM1_PWM_Init(PB1_TIM_ARR,PB1_TIM_PSC);
 	LED_SetFlashing(LED2, LED_FLASHING_ON);
 
   /* Infinite loop */
