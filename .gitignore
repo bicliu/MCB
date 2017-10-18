@@ -4,10 +4,13 @@ Listing/
 Listings/
 Objects/
 *.uvopt
+*.uvoptx
 *.uvgui.Administrator
+*.uvguix.Administrator
 *.uvgui_Administrator.bak
 *.dep
 *.uvgui.DELL
+*.uvguix.DELL
 *.uvgui_DELL.bak
 JLinkSettings.ini
 JLinkLog.txt
