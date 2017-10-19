@@ -16,63 +16,84 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define  A_ON          TIM_CCxCmd(TIM1, TIM_Channel_1, TIM_CCx_Enable);
-#define  A_OFF         TIM_CCxCmd(TIM1, TIM_Channel_1, TIM_CCx_Disable);
-#define  A_H           TIM_SetCompare1(TIM1, (FullPulse));
-#define  A_ADD_0       TIM_SetCompare1(TIM1, (EmptyPulse + (pulseStep*CCR_Val)));
-#define  A_ADD_HALF    TIM_SetCompare1(TIM1, (DefaultPulse + (pulseStep*CCR_Val)));
-#define  A_SUB_FULL    TIM_SetCompare1(TIM1, (FullPulse - (pulseStep*CCR_Val)));
-#define  A_SUB_HALF    TIM_SetCompare1(TIM1, (DefaultPulse - (pulseStep*CCR_Val)));
+#define  A_ON          TIM_CCxCmd(TIM1, TIM_Channel_1, TIM_CCx_Enable)
+#define  A_OFF         TIM_CCxCmd(TIM1, TIM_Channel_1, TIM_CCx_Disable)
+#define  AN_ON         TIM_CCxCmd(TIM1, TIM_Channel_1, TIM_CCxN_Enable)
+#define  AN_OFF        TIM_CCxCmd(TIM1, TIM_Channel_1, TIM_CCxN_Disable)
+#define  A_H           TIM_SetCompare1(TIM1, (FullPulse + 100))
+#define  A_ADD_0       TIM_SetCompare1(TIM1, (EmptyPulse + ((pulseCount+1)*CCR_Val)))
+#define  A_ADD_HALF    TIM_SetCompare1(TIM1, (DefaultPulse + ((pulseCount+1)*CCR_Val)))
+#define  A_SUB_FULL    TIM_SetCompare1(TIM1, (FullPulse - ((pulseCount+1)*CCR_Val)))
+#define  A_SUB_HALF    TIM_SetCompare1(TIM1, (DefaultPulse - ((pulseCount+1)*CCR_Val)))
 
-#define  B_ON          TIM_CCxCmd(TIM1, TIM_Channel_2, TIM_CCx_Enable);
-#define  B_OFF         TIM_CCxCmd(TIM1, TIM_Channel_2, TIM_CCx_Disable);
-#define  B_H           TIM_SetCompare2(TIM1, (FullPulse));
-#define  B_ADD_0       TIM_SetCompare2(TIM1, (EmptyPulse + (pulseStep*CCR_Val)));
-#define  B_ADD_HALF    TIM_SetCompare2(TIM1, (DefaultPulse + (pulseStep*CCR_Val)));
-#define  B_SUB_FULL    TIM_SetCompare2(TIM1, (FullPulse - (pulseStep*CCR_Val)));
-#define  B_SUB_HALF    TIM_SetCompare2(TIM1, (DefaultPulse - (pulseStep*CCR_Val)));
+#define  B_ON          TIM_CCxCmd(TIM1, TIM_Channel_2, TIM_CCx_Enable)
+#define  B_OFF         TIM_CCxCmd(TIM1, TIM_Channel_2, TIM_CCx_Disable)
+#define  BN_ON         TIM_CCxCmd(TIM1, TIM_Channel_2, TIM_CCxN_Enable)
+#define  BN_OFF        TIM_CCxCmd(TIM1, TIM_Channel_2, TIM_CCxN_Disable)
+#define  B_H           TIM_SetCompare2(TIM1, (FullPulse + 100))
+#define  B_ADD_0       TIM_SetCompare2(TIM1, (EmptyPulse + ((pulseCount+1)*CCR_Val)))
+#define  B_ADD_HALF    TIM_SetCompare2(TIM1, (DefaultPulse + ((pulseCount+1)*CCR_Val)))
+#define  B_SUB_FULL    TIM_SetCompare2(TIM1, (FullPulse - ((pulseCount+1)*CCR_Val)))
+#define  B_SUB_HALF    TIM_SetCompare2(TIM1, (DefaultPulse - ((pulseCount+1)*CCR_Val)))
 
-#define  C_ON          TIM_CCxCmd(TIM1, TIM_Channel_3, TIM_CCx_Enable);
-#define  C_OFF         TIM_CCxCmd(TIM1, TIM_Channel_3, TIM_CCx_Disable);
-#define  C_H           TIM_SetCompare3(TIM1, (FullPulse));
-#define  C_ADD_0       TIM_SetCompare3(TIM1, (EmptyPulse + (pulseStep*CCR_Val)));
-#define  C_ADD_HALF    TIM_SetCompare3(TIM1, (DefaultPulse + (pulseStep*CCR_Val)));
-#define  C_SUB_FULL    TIM_SetCompare3(TIM1, (FullPulse - (pulseStep*CCR_Val)));
-#define  C_SUB_HALF    TIM_SetCompare3(TIM1, (DefaultPulse - (pulseStep*CCR_Val)));
+#define  C_ON          TIM_CCxCmd(TIM1, TIM_Channel_3, TIM_CCx_Enable)
+#define  C_OFF         TIM_CCxCmd(TIM1, TIM_Channel_3, TIM_CCx_Disable)
+#define  CN_ON         TIM_CCxCmd(TIM1, TIM_Channel_3, TIM_CCxN_Enable)
+#define  CN_OFF        TIM_CCxCmd(TIM1, TIM_Channel_3, TIM_CCxN_Disable)
+#define  C_H           TIM_SetCompare3(TIM1, (FullPulse + 100))
+#define  C_ADD_0       TIM_SetCompare3(TIM1, (EmptyPulse + ((pulseCount+1)*CCR_Val)))
+#define  C_ADD_HALF    TIM_SetCompare3(TIM1, (DefaultPulse + ((pulseCount+1)*CCR_Val)))
+#define  C_SUB_FULL    TIM_SetCompare3(TIM1, (FullPulse - ((pulseCount+1)*CCR_Val)))
+#define  C_SUB_HALF    TIM_SetCompare3(TIM1, (DefaultPulse - ((pulseCount+1)*CCR_Val)))
 
-#define  D_ON          TIM_CCxCmd(TIM8, TIM_Channel_2, TIM_CCx_Enable);
-#define  D_OFF         TIM_CCxCmd(TIM8, TIM_Channel_2, TIM_CCx_Disable);
-#define  D_H           TIM_SetCompare2(TIM8, (FullPulse));
-#define  D_ADD_0       TIM_SetCompare2(TIM8, (EmptyPulse + (pulseStep*CCR_Val)));
-#define  D_ADD_HALF    TIM_SetCompare2(TIM8, (DefaultPulse + (pulseStep*CCR_Val)));
-#define  D_SUB_FULL    TIM_SetCompare2(TIM8, (FullPulse - (pulseStep*CCR_Val)));
-#define  D_SUB_HALF    TIM_SetCompare2(TIM8, (DefaultPulse - (pulseStep*CCR_Val)));
+#define  F_ON          TIM_CCxCmd(TIM8, TIM_Channel_1, TIM_CCx_Enable)
+#define  F_OFF         TIM_CCxCmd(TIM8, TIM_Channel_1, TIM_CCx_Disable)
+#define  FN_ON         TIM_CCxCmd(TIM8, TIM_Channel_1, TIM_CCxN_Enable)
+#define  FN_OFF        TIM_CCxCmd(TIM8, TIM_Channel_1, TIM_CCxN_Disable)
+#define  F_H           TIM_SetCompare1(TIM8, (FullPulse + 100))
+#define  F_ADD_0       TIM_SetCompare1(TIM8, (EmptyPulse + ((pulseCount+1)*CCR_Val)))
+#define  F_ADD_HALF    TIM_SetCompare1(TIM8, (DefaultPulse + ((pulseCount+1)*CCR_Val)))
+#define  F_SUB_FULL    TIM_SetCompare1(TIM8, (FullPulse - ((pulseCount+1)*CCR_Val)))
+#define  F_SUB_HALF    TIM_SetCompare1(TIM8, (DefaultPulse - ((pulseCount+1)*CCR_Val)))
 
-#define  E_ON          TIM_CCxCmd(TIM8, TIM_Channel_3, TIM_CCx_Enable);
-#define  E_OFF         TIM_CCxCmd(TIM8, TIM_Channel_3, TIM_CCx_Disable);
-#define  E_H           TIM_SetCompare3(TIM8, (FullPulse));
-#define  E_ADD_0       TIM_SetCompare3(TIM8, (EmptyPulse + (pulseStep*CCR_Val)));
-#define  E_ADD_HALF    TIM_SetCompare3(TIM8, (DefaultPulse + (pulseStep*CCR_Val)));
-#define  E_SUB_FULL    TIM_SetCompare3(TIM8, (FullPulse - (pulseStep*CCR_Val)));
-#define  E_SUB_HALF    TIM_SetCompare3(TIM8, (DefaultPulse - (pulseStep*CCR_Val)));
+#define  D_ON          F_ON;TIM_CCxCmd(TIM8, TIM_Channel_2, TIM_CCx_Enable)
+#define  D_OFF         F_OFF;TIM_CCxCmd(TIM8, TIM_Channel_2, TIM_CCx_Disable)
+#define  DN_ON         FN_ON;TIM_CCxCmd(TIM8, TIM_Channel_2, TIM_CCxN_Enable)
+#define  DN_OFF        FN_OFF;TIM_CCxCmd(TIM8, TIM_Channel_2, TIM_CCxN_Disable)
+#define  D_H           F_H;TIM_SetCompare2(TIM8, (FullPulse + 100))
+#define  D_ADD_0       F_ADD_0;TIM_SetCompare2(TIM8, (EmptyPulse + ((pulseCount+1)*CCR_Val)))
+#define  D_ADD_HALF    F_ADD_HALF;TIM_SetCompare2(TIM8, (DefaultPulse + ((pulseCount+1)*CCR_Val)))
+#define  D_SUB_FULL    F_SUB_FULL;TIM_SetCompare2(TIM8, (FullPulse - ((pulseCount+1)*CCR_Val)))
+#define  D_SUB_HALF    F_SUB_HALF;TIM_SetCompare2(TIM8, (DefaultPulse - ((pulseCount+1)*CCR_Val)))
+
+#define  E_ON          TIM_CCxCmd(TIM8, TIM_Channel_3, TIM_CCx_Enable)
+#define  E_OFF         TIM_CCxCmd(TIM8, TIM_Channel_3, TIM_CCx_Disable)
+#define  EN_ON         TIM_CCxCmd(TIM8, TIM_Channel_3, TIM_CCxN_Enable)
+#define  EN_OFF        TIM_CCxCmd(TIM8, TIM_Channel_3, TIM_CCxN_Disable)
+#define  E_H           TIM_SetCompare3(TIM8, (FullPulse + 100))
+#define  E_ADD_0       TIM_SetCompare3(TIM8, (EmptyPulse + ((pulseCount+1)*CCR_Val)))
+#define  E_ADD_HALF    TIM_SetCompare3(TIM8, (DefaultPulse + ((pulseCount+1)*CCR_Val)))
+#define  E_SUB_FULL    TIM_SetCompare3(TIM8, (FullPulse - ((pulseCount+1)*CCR_Val)))
+#define  E_SUB_HALF    TIM_SetCompare3(TIM8, (DefaultPulse - ((pulseCount+1)*CCR_Val)))
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 TIM_OCInitTypeDef  TIM_OCInitStructure;
-uint16_t TimerPeriod = 0;
+uint16_t TimerPeriod = 0, TIM6Period = 0;
 uint16_t DefaultPulse = 0, EmptyPulse = 0, FullPulse = 0/*, HalfPulse = 0*/;
 
 uint16_t CCR_Val = 0;
-uint16_t stepSpeed = 1000;/*PWM_DEFAULT_PERIOD / stepPerPWM*/
+uint16_t stepSpeed = 8;/*PWM_DEFAULT_PERIOD / stepPerPWM*/
 uint32_t stepPerPWM = 0;
 
-uint16_t pulseStep = 0, stepCount = 0;
+uint16_t pulseStep = 0, pulseCount = 0, stepCount = 0;
 //uint8_t startPulse_A = 0;
 //uint8_t pulseMove_A = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 void M5_TIM1_RCC_Configuration(void);
 void M5_TIM1_GPIO_Configuration(void);
+void M5_StateStep(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -209,7 +230,7 @@ void M5_TIM1_Init(uint32_t period)
    Medium-Density Value line devices
    
    The objective is to generate 7 PWM signal at 17.57 KHz:
-     - TIM1_Period = (SystemCoreClock / (17570 / (psc+1))) - 1
+     - TIM1_Period = (SystemCoreClock / (17570 * (psc+1))) - 1
    The channel 1 and channel 1N duty cycle is set to 50%
    The channel 2 and channel 2N duty cycle is set to 37.5%
    The channel 3 and channel 3N duty cycle is set to 25%
@@ -222,7 +243,8 @@ void M5_TIM1_Init(uint32_t period)
 	TimerPeriod = (SystemCoreClock / period ) - 1;
 	
 	DefaultPulse = (uint16_t) (((uint32_t) 50 * (TimerPeriod - 1)) / 100);
-	EmptyPulse = 0;
+	CCR_Val = (uint16_t) (uint16_t) (((uint32_t) 2 * (TimerPeriod - 1)) / 100);
+	EmptyPulse = (uint16_t) (uint16_t) (((uint32_t) 2 * (TimerPeriod - 1)) / 100);
 	FullPulse = TimerPeriod - 1;
   /* Compute CCR1 value to generate a duty cycle at 50% for channel 1 and 1N */
   //Channel1Pulse = (uint16_t) (((uint32_t) 5 * (TimerPeriod - 1)) / 10);
@@ -403,6 +425,7 @@ void M5_TIM6_Init(uint32_t period)
 {
 	/*test io configuration*/
 	//M5_tim6_testIO();
+	M5_IO_Init();
 	
 	/* NVIC Configuration */
   M5_TIM6_NVIC_Configuration();
@@ -410,16 +433,17 @@ void M5_TIM6_Init(uint32_t period)
 	/* System Clocks Configuration */
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
 	
-	TimerPeriod = (SystemCoreClock / period ) - 1;
+	//TimerPeriod = (SystemCoreClock / period ) - 1;
+	TIM6Period = (SystemCoreClock / period ) - 1;
 	
-	stepPerPWM = period / stepSpeed;
+	stepPerPWM = period / (2*stepSpeed);
 	//CCR_Val = (uint16_t) (((uint32_t) (100 / (stepPerPWM * 2)) * (TimerPeriod - 1)) / 100);
-	CCR_Val = (uint16_t) ((TimerPeriod - 1) / (stepPerPWM * 2));
+	//CCR_Val = (uint16_t) ((TimerPeriod - 1) / (stepPerPWM * 2));
 	
 	/* Time Base configuration */
   TIM_TimeBaseStructure.TIM_Prescaler = 0;
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseStructure.TIM_Period = TimerPeriod;
+  TIM_TimeBaseStructure.TIM_Period = TIM6Period;
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
 
@@ -444,14 +468,45 @@ void M5_Start(void)
 	/* TIM6 counter enable */
 	TIM_Cmd(TIM6, ENABLE);
 	
-	GPIO_SetBits(GPIOA, GPIO_Pin_11);
-	GPIO_SetBits(GPIOA, GPIO_Pin_12);
+	//GPIO_SetBits(GPIOA, GPIO_Pin_11);
+	//GPIO_SetBits(GPIOA, GPIO_Pin_12);
 }
 
 /**
   * @brief  steps function
   * @param  None
   * @retval None
+  */
+void M5_Step(void)
+{
+	//uint16_t pulse = 0;
+	//capture = TIM_GetCapture1(TIM1);
+	//TIM_SetCompare1(TIM1, capture + CCR_Val);
+	//pulseStep++;
+	/*if(pulseStep%2 == 0)
+		GPIO_SetBits(GPIOC, GPIO_Pin_8);
+	else
+		GPIO_ResetBits(GPIOC, GPIO_Pin_8);*/
+	if(pulseStep == 0)
+	{
+		M5_StateStep();
+	}
+	if(pulseStep++ > 136)
+	{
+		pulseCount++;
+		if(pulseCount >21)
+		{
+			stepCount++;
+			if(stepCount > 9)
+				stepCount = 0;
+			pulseCount = 0;
+		}
+		pulseStep = 0;
+	}
+	//M5_StateStep();
+}
+
+/*
 	The following Table  describes the steps states:
               -------------------------------------------------------------------------------
              | Step1 | Step2 | Step3 | Step4 | Step5 | Step6 | Step7 | Step8 | Step9 | Step10|
@@ -468,24 +523,9 @@ void M5_Start(void)
    ------------------------------------------------------------------------------------------
   |          |   0   |   0   |   0   |   0   |   0   |   0   |   0   |   0   |   0   |   0   |
    ------------------------------------------------------------------------------------------
-  */
-void M5_Step(void)
+*/
+void M5_StateStep(void)
 {
-	//uint16_t pulse = 0;
-	//capture = TIM_GetCapture1(TIM1);
-	//TIM_SetCompare1(TIM1, capture + CCR_Val);
-	pulseStep++;
-	/*if(pulseStep%2 == 0)
-		GPIO_SetBits(GPIOC, GPIO_Pin_8);
-	else
-		GPIO_ResetBits(GPIOC, GPIO_Pin_8);*/
-	if(pulseStep > stepPerPWM)
-	{
-		stepCount++;
-		if(stepCount > 9)
-			stepCount = 0;
-		pulseStep = 0;
-	}
 	switch(stepCount)
 	{
 		case 0:
@@ -498,6 +538,8 @@ void M5_Step(void)
 			D_OFF;
 		
 			E_OFF;
+			EN_ON;
+			E_H;
 			//stepCount = 1;
 			break;
 		case 1:
@@ -507,6 +549,7 @@ void M5_Step(void)
 		
 			C_H;
 		
+			DN_OFF;
 			D_ON;
 			D_ADD_0;
 		
@@ -516,6 +559,8 @@ void M5_Step(void)
 		case 2:
 			//A_ON;
 			A_OFF;
+			AN_ON;
+			A_H;
 		
 			B_SUB_FULL;
 		
@@ -536,6 +581,7 @@ void M5_Step(void)
 		
 			D_H;
 		
+			EN_OFF;
 			E_ON;
 			E_ADD_0;
 			//stepCount = 4;
@@ -545,8 +591,10 @@ void M5_Step(void)
 			A_OFF;
 		
 			B_OFF;
+			BN_ON;
+			B_H;
 		
-			C_SUB_HALF;
+			C_SUB_FULL;
 		
 			D_H;
 		
@@ -554,6 +602,7 @@ void M5_Step(void)
 			//stepCount = 5;
 			break;
 		case 5:
+			AN_OFF;
 			A_ON;
 			A_ADD_0;
 		
@@ -572,6 +621,8 @@ void M5_Step(void)
 			B_OFF;
 		
 			C_OFF;
+			CN_ON;
+			C_H;
 		
 			D_SUB_FULL;
 		
@@ -581,6 +632,7 @@ void M5_Step(void)
 		case 7:
 			A_H;
 		
+			BN_OFF;
 			B_ON;
 			B_ADD_0;
 		
@@ -599,6 +651,7 @@ void M5_Step(void)
 			C_OFF;
 		
 			D_OFF;
+			DN_ON;
 		
 			E_SUB_FULL;
 			//stepCount = 9;
@@ -608,6 +661,7 @@ void M5_Step(void)
 		
 			B_H;
 		
+			CN_OFF;
 			C_ON;
 			C_ADD_0;
 		
