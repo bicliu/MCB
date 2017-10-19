@@ -63,7 +63,7 @@ uint16_t TimerPeriod = 0;
 uint16_t DefaultPulse = 0, EmptyPulse = 0, FullPulse = 0/*, HalfPulse = 0*/;
 
 uint16_t CCR_Val = 0;
-uint16_t stepSpeed = 1000 / 15;
+uint16_t stepSpeed = 1000;/*PWM_DEFAULT_PERIOD / stepPerPWM*/
 uint32_t stepPerPWM = 0;
 
 uint16_t pulseStep = 0, stepCount = 0;
@@ -177,11 +177,11 @@ void M5_TIM6_NVIC_Configuration(void)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
 		/* Enable the TIM6 for motor0 global Interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = TIM6_IRQn;  //TIM3�ж� PWM PA6/PA7
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;  //��ռ���ȼ�0��
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;  //�����ȼ�3��
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; //IRQͨ����ʹ��
-	NVIC_Init(&NVIC_InitStructure);  //����NVIC_InitStruct��ָ���Ĳ�����ʼ������NVIC�Ĵ���
+	NVIC_InitStructure.NVIC_IRQChannel = TIM6_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 }
 
 /* Public functions ---------------------------------------------------------*/
@@ -209,7 +209,7 @@ void M5_TIM1_Init(uint32_t period)
    Medium-Density Value line devices
    
    The objective is to generate 7 PWM signal at 17.57 KHz:
-     - TIM1_Period = (SystemCoreClock / 17570) - 1
+     - TIM1_Period = (SystemCoreClock / (17570 / (psc+1))) - 1
    The channel 1 and channel 1N duty cycle is set to 50%
    The channel 2 and channel 2N duty cycle is set to 37.5%
    The channel 3 and channel 3N duty cycle is set to 25%
@@ -274,10 +274,10 @@ void M5_TIM1_Init(uint32_t period)
   //TIM_ITConfig(TIM1, TIM_IT_CC1 | TIM_IT_CC2 | TIM_IT_CC3 | TIM_IT_CC4, ENABLE);
 
   /* TIM1 counter enable */
-  TIM_Cmd(TIM1, ENABLE);
+  //TIM_Cmd(TIM1, ENABLE);
 
   /* TIM1 Main Output Enable */
-  TIM_CtrlPWMOutputs(TIM1, ENABLE);
+  //TIM_CtrlPWMOutputs(TIM1, ENABLE);
 }
 
 void M5_TIM8_Init(uint32_t period)
@@ -360,11 +360,25 @@ void M5_TIM8_Init(uint32_t period)
   /* TIM IT enable */
   //TIM_ITConfig(TIM8, TIM_IT_CC1 | TIM_IT_CC2 | TIM_IT_CC3 | TIM_IT_CC4, ENABLE);
 
-  /* TIM1 counter enable */
-  TIM_Cmd(TIM8, ENABLE);
+  /* TIM8 counter enable */
+  //TIM_Cmd(TIM8, ENABLE);
 
-  /* TIM1 Main Output Enable */
-  TIM_CtrlPWMOutputs(TIM8, ENABLE);
+  /* TIM8 Main Output Enable */
+  //TIM_CtrlPWMOutputs(TIM8, ENABLE);
+}
+
+void M5_IO_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA , ENABLE);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11 | GPIO_Pin_12;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	
+	GPIO_ResetBits(GPIOA, GPIO_Pin_11);
+	GPIO_ResetBits(GPIOA, GPIO_Pin_12);
 }
 
 /**
@@ -382,6 +396,9 @@ void M5_tim6_testIO(void)
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 }
+/*
+	period = Hz*(psc + 1)
+*/
 void M5_TIM6_Init(uint32_t period)
 {
 	/*test io configuration*/
@@ -411,7 +428,24 @@ void M5_TIM6_Init(uint32_t period)
 	/* TIM IT enable */
 	TIM_ITConfig(TIM6, TIM_IT_Update | TIM_IT_Trigger, ENABLE);
 	
+	//TIM_Cmd(TIM6, ENABLE);
+}
+
+void M5_Start(void)
+{
+	/* TIM1&8 counter enable */
+	TIM_Cmd(TIM1, ENABLE);
+  TIM_Cmd(TIM8, ENABLE);
+
+  /* TIM1&8 Main Output Enable */
+	TIM_CtrlPWMOutputs(TIM1, ENABLE);
+  TIM_CtrlPWMOutputs(TIM8, ENABLE);
+	
+	/* TIM6 counter enable */
 	TIM_Cmd(TIM6, ENABLE);
+	
+	GPIO_SetBits(GPIOA, GPIO_Pin_11);
+	GPIO_SetBits(GPIOA, GPIO_Pin_12);
 }
 
 /**

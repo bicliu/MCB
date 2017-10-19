@@ -24,6 +24,7 @@
 
 /*tim1 period 20000 Hz*/
 #define PWM_DEFAULT_PERIOD    20000
+#define STEP_DEFSULT_PERIOD   
 
 extern uint16_t CCR_Val;
 
@@ -31,6 +32,7 @@ void M5_TIM1_Init(uint32_t period);
 void M5_TIM8_Init(uint32_t period);
 void M5_TIM6_Init(uint32_t period);
 void M5_Step(void);
+void M5_Start(void);
 
 #ifdef __cplusplus
 }
