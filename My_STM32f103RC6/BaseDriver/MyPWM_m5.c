@@ -20,7 +20,8 @@
 #define  A_OFF         TIM_CCxCmd(TIM1, TIM_Channel_1, TIM_CCx_Disable)
 #define  AN_ON         TIM_CCxCmd(TIM1, TIM_Channel_1, TIM_CCxN_Enable)
 #define  AN_OFF        TIM_CCxCmd(TIM1, TIM_Channel_1, TIM_CCxN_Disable)
-#define  A_H           TIM_SetCompare1(TIM1, (FullPulse + 100))
+//#define  A_H           TIM_SetCompare1(TIM1, (FullPulse + 100))
+#define  A_H           TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_OCMode_Active);TIM_ForcedOC1Config(TIM1, TIM_ForcedAction_InActive)
 #define  A_ADD_0       TIM_SetCompare1(TIM1, (EmptyPulse + ((pulseCount+1)*CCR_Val)))
 #define  A_ADD_HALF    TIM_SetCompare1(TIM1, (DefaultPulse + ((pulseCount+1)*CCR_Val)))
 #define  A_SUB_FULL    TIM_SetCompare1(TIM1, (FullPulse - ((pulseCount+1)*CCR_Val)))
@@ -138,14 +139,14 @@ void M5_TIM1_GPIO_Configuration(void)
 
 #else
   /* GPIOA Configuration: Channel 1, 2 and 3 as alternate function push-pull */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8/* | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11*/;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
 
   /* GPIOB Configuration: Channel 1N, 2N and 3N as alternate function push-pull */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
+  //GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13/* | GPIO_Pin_14 | GPIO_Pin_15*/;
+  //GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 #endif
 }
@@ -161,10 +162,10 @@ void M5_TIM8_GPIO_Configuration(void)
   GPIO_Init(GPIOC, &GPIO_InitStructure);
 
   /* GPIOB Configuration: Channel 1N, 2N and 3N as alternate function push-pull */
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
-  GPIO_Init(GPIOB, &GPIO_InitStructure);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-	GPIO_Init(GPIOA,&GPIO_InitStructure);
+  //GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
+  //GPIO_Init(GPIOB, &GPIO_InitStructure);
+	//GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+	//GPIO_Init(GPIOA,&GPIO_InitStructure);
 }
 
 /**
@@ -395,12 +396,17 @@ void M5_IO_Init(void)
 	
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA , ENABLE);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11 | GPIO_Pin_12;
+	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA |RCC_APB2Periph_GPIOC , ENABLE);
+	GPIO_InitStructure.GPIO_Pin = /*GPIO_Pin_11 | */GPIO_Pin_12;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	GPIO_InitStructure.GPIO_Pin = /*GPIO_Pin_3 | */GPIO_Pin_4;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 	
-	GPIO_ResetBits(GPIOA, GPIO_Pin_11);
+	//GPIO_ResetBits(GPIOA, GPIO_Pin_11);
 	GPIO_ResetBits(GPIOA, GPIO_Pin_12);
+	//GPIO_ResetBits(GPIOC, GPIO_Pin_3);
+	GPIO_ResetBits(GPIOC, GPIO_Pin_4);
 }
 
 /**
@@ -468,8 +474,20 @@ void M5_Start(void)
 	/* TIM6 counter enable */
 	TIM_Cmd(TIM6, ENABLE);
 	
+	/*EN_A1*/
 	//GPIO_SetBits(GPIOA, GPIO_Pin_11);
-	//GPIO_SetBits(GPIOA, GPIO_Pin_12);
+	GPIO_SetBits(GPIOA, GPIO_Pin_12);
+	/*EN_B1*/
+	//GPIO_SetBits(GPIOC, GPIO_Pin_3);
+	GPIO_SetBits(GPIOC, GPIO_Pin_4);
+}
+
+void testIO(void)
+{
+	if(pulseStep%2 == 0)
+		GPIO_SetBits(GPIOC, GPIO_Pin_8);
+	else
+		GPIO_ResetBits(GPIOC, GPIO_Pin_8);
 }
 
 /**
@@ -483,10 +501,7 @@ void M5_Step(void)
 	//capture = TIM_GetCapture1(TIM1);
 	//TIM_SetCompare1(TIM1, capture + CCR_Val);
 	//pulseStep++;
-	/*if(pulseStep%2 == 0)
-		GPIO_SetBits(GPIOC, GPIO_Pin_8);
-	else
-		GPIO_ResetBits(GPIOC, GPIO_Pin_8);*/
+	//testIO();
 	if(pulseStep == 0)
 	{
 		M5_StateStep();
@@ -526,148 +541,236 @@ void M5_Step(void)
 */
 void M5_StateStep(void)
 {
+	TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_OCMode_PWM1);
+
+	TIM_SelectOCxM(TIM8, TIM_Channel_1, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM8, TIM_Channel_2, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM8, TIM_Channel_3, TIM_OCMode_PWM1);	
 	switch(stepCount)
 	{
 		case 0:
+			AN_OFF;
 			A_SUB_FULL;
+			A_ON;
 			
+			BN_OFF;
 			B_H;
+			B_ON;
 		
+			CN_OFF;
 			C_ADD_HALF;
+			C_ON;
 		
 			D_OFF;
+			D_H;
+			D_ON;
 		
 			E_OFF;
-			EN_ON;
 			E_H;
+			EN_ON;
 			//stepCount = 1;
 			break;
 		case 1:
+			AN_OFF;
 			A_SUB_HALF;
+			A_ON;
 		
+			BN_OFF;
 			B_H;
+			B_ON;
 		
+			CN_OFF;
 			C_H;
+			C_ON;
 		
 			DN_OFF;
-			D_ON;
 			D_ADD_0;
+			D_ON;
 		
 			E_OFF;
+			E_H;
+			EN_ON;
 			//stepCount = 2;
 			break;
 		case 2:
 			//A_ON;
 			A_OFF;
-			AN_ON;
 			A_H;
+			AN_ON;
 		
+			BN_OFF;
 			B_SUB_FULL;
+			B_ON;
 		
+			CN_OFF;
 			C_H;
+			C_ON;
 		
+			DN_OFF;
 			D_ADD_HALF;
+			D_ON;
 		
 			E_OFF;
+			E_H;
+			EN_ON;
 			//stepCount = 3;
 			break;
 		case 3:
 			//A_ON;
 			A_OFF;
+			A_H;
+			AN_ON;
 		
+			BN_OFF;
 			B_SUB_HALF;
+			B_ON;
 		
+			CN_OFF;
 			C_H;
+			C_ON;
 		
+			DN_OFF;
 			D_H;
+			D_ON;
 		
 			EN_OFF;
-			E_ON;
 			E_ADD_0;
+			E_ON;
 			//stepCount = 4;
 			break;
 		case 4:
 			//A_ON;
 			A_OFF;
+			A_H;
+			AN_OFF;
 		
 			B_OFF;
-			BN_ON;
 			B_H;
+			BN_ON;
 		
+			CN_OFF;
 			C_SUB_FULL;
+			C_ON;
 		
+			DN_OFF;
 			D_H;
+			D_ON;
 		
+			EN_OFF;
 			E_ADD_HALF;
+			E_ON;
 			//stepCount = 5;
 			break;
 		case 5:
 			AN_OFF;
-			A_ON;
 			A_ADD_0;
+			A_ON;
 		
 			B_OFF;
+			B_H;
+			BN_ON;
 		
+			CN_OFF;
 			C_SUB_HALF;
+			C_ON;
 		
+			DN_OFF;
 			D_H;
+			D_ON;
 		
+			EN_OFF;
 			E_H;
+			E_ON;
 			//stepCount = 6;
 			break;
 		case 6:
+			AN_OFF;
 			A_ADD_HALF;
+			A_ON;
 		
 			B_OFF;
+			B_H;
+			BN_ON;
 		
 			C_OFF;
-			CN_ON;
 			C_H;
+			CN_ON;
 		
+			DN_OFF;
 			D_SUB_FULL;
+			D_ON;
 		
+			EN_OFF;
 			E_H;
+			E_ON;
 			//stepCount = 7;
 			break;
 		case 7:
+			//AN_OFF;
 			A_H;
+			A_ON;
 		
 			BN_OFF;
-			B_ON;
 			B_ADD_0;
+			B_ON;
 		
 			C_OFF;
+			C_H;
+			CN_ON;
 		
+			DN_OFF;
 			D_SUB_HALF;
+			D_ON;
 		
+			EN_OFF;
 			E_H;
+			E_ON;
 			//stepCount = 8;
 			break;
 		case 8:
+			//AN_OFF;
 			A_H;
+			A_ON;
 		
+			BN_OFF;
 			B_ADD_HALF;
+			B_ON;
 		
 			C_OFF;
+			C_H;
+			CN_ON;
 		
 			D_OFF;
+			D_H;
 			DN_ON;
 		
+			EN_OFF;
 			E_SUB_FULL;
+			E_ON;
 			//stepCount = 9;
 			break;
 		default:
+			//AN_OFF;
 			A_H;
+			A_ON;
 		
+			BN_OFF;
 			B_H;
+			B_ON;
 		
 			CN_OFF;
 			C_ON;
 			C_ADD_0;
 		
 			D_OFF;
+			D_H;
+			D_ON;
 		
+			EN_OFF;
 			E_SUB_HALF;
+			E_ON;
 			//stepCount = 0;
 			break;
 	}
