@@ -56,8 +56,8 @@
 #define  FN_OFF        TIM_CCxNCmd(TIM8, TIM_Channel_1, TIM_CCxN_Disable)
 #define  F_IO_AF       GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_6;GPIO_Init(GPIOC, &GPIO_AF_InitStructure)
 #define  F_IO_OUT_H    GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_6;GPIO_Init(GPIOC, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOC, GPIO_Pin_6)
-#define  FN_IO_AF      GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_0;GPIO_Init(GPIOB, &GPIO_AF_InitStructure)
-#define  FN_IO_OUT_H   GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_0;GPIO_Init(GPIOB, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOB, GPIO_Pin_0)
+#define  FN_IO_AF      GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_7;GPIO_Init(GPIOA, &GPIO_AF_InitStructure)
+#define  FN_IO_OUT_H   GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_7;GPIO_Init(GPIOA, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOA, GPIO_Pin_7)
 #define  F_H           F_IO_OUT_H
 #define  FN_H          FN_IO_OUT_H/*TIM_SetCompare1(TIM8, DefaultPulse)*/
 
@@ -67,8 +67,8 @@
 #define  DN_OFF        FN_OFF;TIM_CCxNCmd(TIM8, TIM_Channel_2, TIM_CCxN_Disable)
 #define  D_IO_AF       F_IO_AF;GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_7;GPIO_Init(GPIOC, &GPIO_AF_InitStructure)
 #define  D_IO_OUT_H    F_IO_OUT_H;GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_7;GPIO_Init(GPIOC, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOC, GPIO_Pin_7)
-#define  DN_IO_AF      FN_IO_AF;GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_1;GPIO_Init(GPIOB, &GPIO_AF_InitStructure)
-#define  DN_IO_OUT_H   FN_IO_OUT_H;GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_1;GPIO_Init(GPIOB, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOB, GPIO_Pin_1)
+#define  DN_IO_AF      FN_IO_AF;GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_0;GPIO_Init(GPIOB, &GPIO_AF_InitStructure)
+#define  DN_IO_OUT_H   FN_IO_OUT_H;GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_0;GPIO_Init(GPIOB, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOB, GPIO_Pin_0)
 #define  D_H           F_H;D_IO_OUT_H
 #define  DN_H          FN_H;DN_IO_OUT_H/*FN_H;TIM_SetCompare2(TIM8, DefaultPulse)*/
 
@@ -78,8 +78,8 @@
 #define  EN_OFF        TIM_CCxNCmd(TIM8, TIM_Channel_3, TIM_CCxN_Disable)
 #define  E_IO_AF       GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_8;GPIO_Init(GPIOC, &GPIO_AF_InitStructure)
 #define  E_IO_OUT_H    GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_8;GPIO_Init(GPIOC, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOC, GPIO_Pin_8)
-#define  EN_IO_AF      GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_7;GPIO_Init(GPIOA, &GPIO_AF_InitStructure)
-#define  EN_IO_OUT_H   GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_7;GPIO_Init(GPIOA, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOA, GPIO_Pin_7)
+#define  EN_IO_AF      GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_1;GPIO_Init(GPIOB, &GPIO_AF_InitStructure)
+#define  EN_IO_OUT_H   GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_1;GPIO_Init(GPIOB, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOB, GPIO_Pin_1)
 #define  E_H           E_IO_OUT_H
 #define  EN_H          EN_IO_OUT_H/*TIM_SetCompare3(TIM8, DefaultPulse)*/
 
@@ -985,9 +985,9 @@ void M5_StateStep(void)
 			B_SUB_HALF;
 			B_ON;
 		
-			CN_OFF;
+			C_OFF;
 			C_ADD_HALF;
-			C_ON;
+			CN_ON;
 		
 			D_OFF;
 			DN_IO_AF;
