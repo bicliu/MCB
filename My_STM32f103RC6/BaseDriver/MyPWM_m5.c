@@ -26,7 +26,8 @@
 #define  AN_IO_AF      GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_13;GPIO_Init(GPIOB, &GPIO_AF_InitStructure)
 #define  AN_IO_OUT_H   GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_13;GPIO_Init(GPIOB, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOB, GPIO_Pin_13)
 #define  A_H           A_IO_OUT_H
-#define  AN_H          AN_IO_OUT_H/*TIM_SetCompare1(TIM1, DefaultPulse)*/
+#define  AN_H          AN_IO_OUT_H/**/
+#define  A_PWM         TIM_SetCompare1(TIM1, DefaultPulse)
 
 #define  B_ON          TIM_CCxCmd(TIM1, TIM_Channel_2, TIM_CCx_Enable)
 #define  B_OFF         TIM_CCxCmd(TIM1, TIM_Channel_2, TIM_CCx_Disable)
@@ -37,7 +38,8 @@
 #define  BN_IO_AF      GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_14;GPIO_Init(GPIOB, &GPIO_AF_InitStructure)
 #define  BN_IO_OUT_H   GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_14;GPIO_Init(GPIOB, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOB, GPIO_Pin_14)
 #define  B_H           B_IO_OUT_H
-#define  BN_H          BN_IO_OUT_H/*TIM_SetCompare2(TIM1, DefaultPulse)*/
+#define  BN_H          BN_IO_OUT_H/**/
+#define  B_PWM         TIM_SetCompare2(TIM1, DefaultPulse)
 
 #define  C_ON          TIM_CCxCmd(TIM1, TIM_Channel_3, TIM_CCx_Enable)
 #define  C_OFF         TIM_CCxCmd(TIM1, TIM_Channel_3, TIM_CCx_Disable)
@@ -48,7 +50,8 @@
 #define  CN_IO_AF      GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_15;GPIO_Init(GPIOB, &GPIO_AF_InitStructure)
 #define  CN_IO_OUT_H   GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_15;GPIO_Init(GPIOB, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOB, GPIO_Pin_15)
 #define  C_H           C_IO_OUT_H
-#define  CN_H          CN_IO_OUT_H/*TIM_SetCompare3(TIM1, DefaultPulse)*/
+#define  CN_H          CN_IO_OUT_H/**/
+#define  C_PWM         TIM_SetCompare3(TIM1, DefaultPulse)
 
 #define  F_ON          TIM_CCxCmd(TIM8, TIM_Channel_1, TIM_CCx_Enable)
 #define  F_OFF         TIM_CCxCmd(TIM8, TIM_Channel_1, TIM_CCx_Disable)
@@ -59,7 +62,8 @@
 #define  FN_IO_AF      GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_7;GPIO_Init(GPIOA, &GPIO_AF_InitStructure)
 #define  FN_IO_OUT_H   GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_7;GPIO_Init(GPIOA, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOA, GPIO_Pin_7)
 #define  F_H           F_IO_OUT_H
-#define  FN_H          FN_IO_OUT_H/*TIM_SetCompare1(TIM8, DefaultPulse)*/
+#define  FN_H          FN_IO_OUT_H/**/
+#define  F_PWM         TIM_SetCompare1(TIM8, DefaultPulse)
 
 #define  D_ON          F_ON;TIM_CCxCmd(TIM8, TIM_Channel_2, TIM_CCx_Enable)
 #define  D_OFF         F_OFF;TIM_CCxCmd(TIM8, TIM_Channel_2, TIM_CCx_Disable)
@@ -70,7 +74,8 @@
 #define  DN_IO_AF      FN_IO_AF;GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_0;GPIO_Init(GPIOB, &GPIO_AF_InitStructure)
 #define  DN_IO_OUT_H   FN_IO_OUT_H;GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_0;GPIO_Init(GPIOB, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOB, GPIO_Pin_0)
 #define  D_H           F_H;D_IO_OUT_H
-#define  DN_H          FN_H;DN_IO_OUT_H/*FN_H;TIM_SetCompare2(TIM8, DefaultPulse)*/
+#define  DN_H          FN_H;DN_IO_OUT_H/*FN_H;*/
+#define  D_PWM         F_PWM;TIM_SetCompare2(TIM8, DefaultPulse)
 
 #define  E_ON          TIM_CCxCmd(TIM8, TIM_Channel_3, TIM_CCx_Enable)
 #define  E_OFF         TIM_CCxCmd(TIM8, TIM_Channel_3, TIM_CCx_Disable)
@@ -81,7 +86,8 @@
 #define  EN_IO_AF      GPIO_AF_InitStructure.GPIO_Pin = GPIO_Pin_1;GPIO_Init(GPIOB, &GPIO_AF_InitStructure)
 #define  EN_IO_OUT_H   GPIO_OUT_InitStructure.GPIO_Pin = GPIO_Pin_1;GPIO_Init(GPIOB, &GPIO_OUT_InitStructure);GPIO_SetBits(GPIOB, GPIO_Pin_1)
 #define  E_H           E_IO_OUT_H
-#define  EN_H          EN_IO_OUT_H/*TIM_SetCompare3(TIM8, DefaultPulse)*/
+#define  EN_H          EN_IO_OUT_H/**/
+#define  E_PWM         TIM_SetCompare3(TIM8, DefaultPulse)
 
 #if PWM1_MODE
 #define  A_ADD_0       TIM_SetCompare1(TIM1, (FullPulse - ((pulseCount+1)*CCR_Val)))
@@ -239,6 +245,7 @@ uint16_t pulseStep = 0, pulseCount = 0, stepCount = 0;
 void M5_TIM1_RCC_Configuration(void);
 void M5_TIM1_GPIO_Configuration(void);
 void M5_StateStep(void);
+void M5_TenSteps(void);
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -623,11 +630,11 @@ void M5_Start(void)
 	TIM_Cmd(TIM6, ENABLE);
 	
 	/*EN_A1*/
-	//GPIO_SetBits(GPIOA, GPIO_Pin_11);
+	GPIO_SetBits(GPIOA, GPIO_Pin_11);
 	GPIO_SetBits(GPIOA, GPIO_Pin_12);
 	/*EN_B1*/
 	//GPIO_SetBits(GPIOC, GPIO_Pin_3);
-	GPIO_SetBits(GPIOC, GPIO_Pin_4);
+	//GPIO_SetBits(GPIOC, GPIO_Pin_4);
 }
 
 /*void testIO(void)
@@ -643,6 +650,7 @@ void M5_Start(void)
   * @param  None
   * @retval None
   */
+#if 0
 void M5_Step(void)
 {
 	//uint16_t pulse = 0;
@@ -668,7 +676,12 @@ void M5_Step(void)
 	}
 	//M5_StateStep();
 }
-#if 0
+#else
+void M5_Step(void)
+{
+}
+#endif
+#if 1
 /*
 	The following Table  describes the steps states:
               -------------------------------------------------------------------------------
@@ -1189,3 +1202,76 @@ void M5_StateStep(void)
 	}
 }
 #endif
+
+/*
+	The following Table  describes the steps states:
+              -------------------------------------------------------------------------------
+             | Step1 | Step2 | Step3 | Step4 | Step5 | Step6 | Step7 | Step8 | Step9 | Step10|
+   ------------------------------------------------------------------------------------------
+  |    a     |   1   |   0   |   0   |   0   |   0   |   0   |   1   |   1   |   1   |   1   |
+   ------------------------------------------------------------------------------------------
+  |    b     |   1   |   1   |   1   |   0   |   0   |   0   |   0   |   0   |   1   |   1   |
+   ------------------------------------------------------------------------------------------
+  |    c     |   1   |   1   |   1   |   1   |   1   |   0   |   0   |   0   |   0   |   0   |
+   ------------------------------------------------------------------------------------------
+  |    d     |   0   |   0   |   1   |   1   |   1   |   1   |   1   |   0   |   0   |   0   |
+   ------------------------------------------------------------------------------------------
+  |    e     |   0   |   0   |   0   |   0   |   1   |   1   |   1   |   1   |   1   |   0   |
+   ------------------------------------------------------------------------------------------
+  |          |   0   |   0   |   0   |   0   |   0   |   0   |   0   |   0   |   0   |   0   |
+   ------------------------------------------------------------------------------------------
+*/
+void M5_TenSteps(void)
+{
+	TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_OCMode_PWM1);
+
+	TIM_SelectOCxM(TIM8, TIM_Channel_1, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM8, TIM_Channel_2, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM8, TIM_Channel_3, TIM_OCMode_PWM1);	
+	switch(stepCount)
+	{
+		case 1:
+			AN_OFF;
+			A_PWM;
+			A_ON;
+
+			BN_OFF;
+			B_PWM;
+			B_ON;
+
+			CN_OFF;
+			C_PWM;
+			C_ON;
+
+			D_OFF;
+			D_PWM;
+			DN_ON;
+
+			E_OFF;
+			E_PWM;
+			EN_ON;
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4:
+			break;
+		case 5:
+			break;
+		case 6:
+			break;
+		case 7:
+			break;
+		case 8:
+			break;
+		case 9:
+			break;
+		case 0:
+			break;
+		default:
+			break;
+	}
+}
