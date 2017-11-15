@@ -238,6 +238,7 @@ uint16_t stepSpeed = 8;/*PWM_DEFAULT_PERIOD / stepPerPWM*/
 uint32_t stepPerPWM = 0;
 
 uint16_t pulseStep = 0, pulseCount = 0, stepCount = 0;
+uint8_t  m_direction = 0;
 //uint8_t startPulse_A = 0;
 //uint8_t pulseMove_A = 0;
 
@@ -679,6 +680,10 @@ void M5_Step(void)
 #else
 void M5_Step(void)
 {
+	if(m_direction == 0)
+	{
+		stepCount = (stepCount + 1) % 10;
+	}
 }
 #endif
 #if 1
@@ -1254,22 +1259,193 @@ void M5_TenSteps(void)
 			EN_ON;
 			break;
 		case 2:
+			A_OFF;
+			A_PWM;
+			AN_ON;
+
+			BN_OFF;
+			B_PWM;
+			B_ON;
+
+			CN_OFF;
+			C_PWM;
+			C_ON;
+
+			D_OFF;
+			D_PWM;
+			DN_ON;
+
+			E_OFF;
+			E_PWM;
+			EN_ON;
 			break;
 		case 3:
+			A_OFF;
+			A_PWM;
+			AN_ON;
+
+			BN_OFF;
+			B_PWM;
+			B_ON;
+
+			CN_OFF;
+			C_PWM;
+			C_ON;
+
+			DN_OFF;
+			D_PWM;
+			D_ON;
+
+			E_OFF;
+			E_PWM;
+			EN_ON;
 			break;
 		case 4:
+			A_OFF;
+			A_PWM;
+			AN_ON;
+
+			B_OFF;
+			B_PWM;
+			BN_ON;
+
+			CN_OFF;
+			C_PWM;
+			C_ON;
+
+			DN_OFF;
+			D_PWM;
+			D_ON;
+
+			E_OFF;
+			E_PWM;
+			EN_ON;
 			break;
 		case 5:
+			A_OFF;
+			A_PWM;
+			AN_ON;
+
+			B_OFF;
+			B_PWM;
+			BN_ON;
+
+			CN_OFF;
+			C_PWM;
+			C_ON;
+
+			DN_OFF;
+			D_PWM;
+			D_ON;
+
+			EN_OFF;
+			E_PWM;
+			E_ON;
 			break;
 		case 6:
+			A_OFF;
+			A_PWM;
+			AN_ON;
+
+			B_OFF;
+			B_PWM;
+			BN_ON;
+
+			C_OFF;
+			C_PWM;
+			CN_ON;
+
+			DN_OFF;
+			D_PWM;
+			D_ON;
+
+			EN_OFF;
+			E_PWM;
+			E_ON;
 			break;
 		case 7:
+			AN_OFF;
+			A_PWM;
+			A_ON;
+
+			B_OFF;
+			B_PWM;
+			BN_ON;
+
+			C_OFF;
+			C_PWM;
+			CN_ON;
+
+			DN_OFF;
+			D_PWM;
+			D_ON;
+
+			EN_OFF;
+			E_PWM;
+			E_ON;
 			break;
 		case 8:
+			AN_OFF;
+			A_PWM;
+			A_ON;
+
+			B_OFF;
+			B_PWM;
+			BN_ON;
+
+			C_OFF;
+			C_PWM;
+			CN_ON;
+
+			D_OFF;
+			D_PWM;
+			DN_ON;
+
+			EN_OFF;
+			E_PWM;
+			E_ON;
 			break;
 		case 9:
+			AN_OFF;
+			A_PWM;
+			A_ON;
+
+			BN_OFF;
+			B_PWM;
+			B_ON;
+
+			C_OFF;
+			C_PWM;
+			CN_ON;
+
+			D_OFF;
+			D_PWM;
+			DN_ON;
+
+			EN_OFF;
+			E_PWM;
+			E_ON;
 			break;
 		case 0:
+			AN_OFF;
+			A_PWM;
+			A_ON;
+
+			BN_OFF;
+			B_PWM;
+			B_ON;
+
+			C_OFF;
+			C_PWM;
+			CN_ON;
+
+			D_OFF;
+			D_PWM;
+			DN_ON;
+
+			E_OFF;
+			E_PWM;
+			EN_ON;
 			break;
 		default:
 			break;
