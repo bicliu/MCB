@@ -684,6 +684,11 @@ void M5_Step(void)
 	{
 		stepCount = (stepCount + 1) % 10;
 	}
+	else
+	{
+		stepCount = (stepCount + 10 - 1) % 10;
+	}
+	M5_TenSteps();
 }
 #endif
 #if 1
@@ -1277,7 +1282,7 @@ void M5_TenSteps(void)
 
 			E_OFF;
 			E_PWM;
-			EN_ON;
+			EN_OFF;
 			break;
 		case 3:
 			A_OFF;
@@ -1303,7 +1308,7 @@ void M5_TenSteps(void)
 		case 4:
 			A_OFF;
 			A_PWM;
-			AN_ON;
+			AN_OFF;
 
 			B_OFF;
 			B_PWM;
@@ -1349,7 +1354,7 @@ void M5_TenSteps(void)
 
 			B_OFF;
 			B_PWM;
-			BN_ON;
+			BN_OFF;
 
 			C_OFF;
 			C_PWM;
@@ -1395,7 +1400,7 @@ void M5_TenSteps(void)
 
 			C_OFF;
 			C_PWM;
-			CN_ON;
+			CN_OFF;
 
 			D_OFF;
 			D_PWM;
