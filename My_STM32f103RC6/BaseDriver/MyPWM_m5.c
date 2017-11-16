@@ -28,6 +28,7 @@
 #define  A_H           A_IO_OUT_H
 #define  AN_H          AN_IO_OUT_H/**/
 #define  A_PWM         TIM_SetCompare1(TIM1, DefaultPulse)
+#define  A_HALF_PWM    TIM_SetCompare1(TIM1, QuartPulse)
 
 #define  B_ON          TIM_CCxCmd(TIM1, TIM_Channel_2, TIM_CCx_Enable)
 #define  B_OFF         TIM_CCxCmd(TIM1, TIM_Channel_2, TIM_CCx_Disable)
@@ -40,6 +41,7 @@
 #define  B_H           B_IO_OUT_H
 #define  BN_H          BN_IO_OUT_H/**/
 #define  B_PWM         TIM_SetCompare2(TIM1, DefaultPulse)
+#define  B_HALF_PWM    TIM_SetCompare2(TIM1, QuartPulse)
 
 #define  C_ON          TIM_CCxCmd(TIM1, TIM_Channel_3, TIM_CCx_Enable)
 #define  C_OFF         TIM_CCxCmd(TIM1, TIM_Channel_3, TIM_CCx_Disable)
@@ -52,6 +54,7 @@
 #define  C_H           C_IO_OUT_H
 #define  CN_H          CN_IO_OUT_H/**/
 #define  C_PWM         TIM_SetCompare3(TIM1, DefaultPulse)
+#define  C_HALF_PWM    TIM_SetCompare3(TIM1, QuartPulse)
 
 #define  F_ON          TIM_CCxCmd(TIM8, TIM_Channel_1, TIM_CCx_Enable)
 #define  F_OFF         TIM_CCxCmd(TIM8, TIM_Channel_1, TIM_CCx_Disable)
@@ -64,6 +67,7 @@
 #define  F_H           F_IO_OUT_H
 #define  FN_H          FN_IO_OUT_H/**/
 #define  F_PWM         TIM_SetCompare1(TIM8, DefaultPulse)
+#define  F_HALF_PWM    TIM_SetCompare1(TIM8, QuartPulse)
 
 #define  D_ON          F_ON;TIM_CCxCmd(TIM8, TIM_Channel_2, TIM_CCx_Enable)
 #define  D_OFF         F_OFF;TIM_CCxCmd(TIM8, TIM_Channel_2, TIM_CCx_Disable)
@@ -76,6 +80,7 @@
 #define  D_H           F_H;D_IO_OUT_H
 #define  DN_H          FN_H;DN_IO_OUT_H/*FN_H;*/
 #define  D_PWM         F_PWM;TIM_SetCompare2(TIM8, DefaultPulse)
+#define  D_HALF_PWM    F_HALF_PWM;TIM_SetCompare2(TIM8, QuartPulse)
 
 #define  E_ON          TIM_CCxCmd(TIM8, TIM_Channel_3, TIM_CCx_Enable)
 #define  E_OFF         TIM_CCxCmd(TIM8, TIM_Channel_3, TIM_CCx_Disable)
@@ -88,6 +93,7 @@
 #define  E_H           E_IO_OUT_H
 #define  EN_H          EN_IO_OUT_H/**/
 #define  E_PWM         TIM_SetCompare3(TIM8, DefaultPulse)
+#define  E_HALF_PWM    TIM_SetCompare3(TIM8, QuartPulse)
 
 #if PWM1_MODE
 #define  A_ADD_0       TIM_SetCompare1(TIM1, (FullPulse - ((pulseCount+1)*CCR_Val)))
@@ -231,7 +237,7 @@ GPIO_InitTypeDef GPIO_AF_InitStructure, GPIO_OUT_InitStructure;
 TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 TIM_OCInitTypeDef  TIM_OCInitStructure;
 uint16_t TimerPeriod = 0, TIM6Period = 0;
-uint16_t DefaultPulse = 0, EmptyPulse = 0, FullPulse = 0/*, HalfPulse = 0*/;
+uint16_t DefaultPulse = 0, EmptyPulse = 0, FullPulse = 0, QuartPulse/*, HalfPulse = 0*/;
 
 uint16_t CCR_Val = 0;
 uint16_t stepSpeed = 8;/*PWM_DEFAULT_PERIOD / stepPerPWM*/
@@ -400,6 +406,7 @@ void M5_TIM1_Init(uint32_t period)
 	TimerPeriod = (SystemCoreClock / period ) - 1;
 	
 	DefaultPulse = (uint16_t) (((uint32_t) 50 * (TimerPeriod - 1)) / 100);
+	QuartPulse = (uint16_t) (((uint32_t) 75 * (TimerPeriod - 1)) / 100);
 	CCR_Val = (uint16_t) (uint16_t) (((uint32_t) 2 * (TimerPeriod - 1)) / 100);
 	EmptyPulse = (uint16_t) (uint16_t) (((uint32_t) 2 * (TimerPeriod - 1)) / 100);
 	FullPulse = TimerPeriod - 1;
@@ -1213,6 +1220,7 @@ void M5_StateStep(void)
 }
 #endif
 
+#if 0
 /*
 	The following Table  describes the steps states:
               -------------------------------------------------------------------------------
@@ -1456,3 +1464,207 @@ void M5_TenSteps(void)
 			break;
 	}
 }
+#endif
+
+// ABC-  BC-  BCD-  CD_  CDE-  DE-  DEA-  EA-  EAB-  AB-
+void M5_TenSteps(void)
+{
+	TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_OCMode_PWM1);
+
+	TIM_SelectOCxM(TIM8, TIM_Channel_1, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM8, TIM_Channel_2, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM8, TIM_Channel_3, TIM_OCMode_PWM1);	
+	switch(stepCount)
+	{
+		case 1:
+			AN_OFF;
+			A_PWM;
+			A_ON;
+		
+			BN_OFF;
+			B_HALF_PWM;
+			B_ON;
+			
+			C_OFF;
+			C_PWM;
+			CN_ON;
+			
+			DN_OFF;
+			D_OFF;
+		
+			EN_OFF;
+			E_OFF;
+			break;
+		case 2:
+			AN_OFF;
+			A_OFF;
+		
+			BN_OFF;
+			B_PWM;
+			B_ON;
+			
+			C_OFF;
+			C_PWM;
+			CN_ON;
+			
+			DN_OFF;
+			D_OFF;
+		
+			EN_OFF;
+			E_OFF;
+			break;
+		case 3:
+			AN_OFF;
+			A_OFF;
+		
+			BN_OFF;
+			B_PWM;
+			B_ON;
+			
+			CN_OFF;
+			C_HALF_PWM;
+			C_ON;
+			
+			D_OFF;
+			D_PWM;
+			DN_ON;
+		
+			EN_OFF;
+			E_OFF;
+			break;
+		case 4:
+			AN_OFF;
+			A_OFF;
+		
+			BN_OFF;
+			B_OFF;
+			
+			CN_OFF;
+			C_PWM;
+			C_ON;
+			
+			D_OFF;
+			D_PWM;
+			DN_ON;
+		
+			EN_OFF;
+			E_OFF;
+			break;
+		case 5:
+			AN_OFF;
+			A_OFF;
+		
+			BN_OFF;
+			B_OFF;
+			
+			CN_OFF;
+			C_PWM;
+			C_ON;
+			
+			DN_OFF;
+			D_HALF_PWM;
+			D_ON;
+		
+			E_OFF;
+			E_PWM;
+			EN_ON;
+			break;
+		case 6:
+			AN_OFF;
+			A_OFF;
+		
+			BN_OFF;
+			B_OFF;
+			
+			CN_OFF;
+			C_OFF;
+			
+			DN_OFF;
+			D_PWM;
+			D_ON;
+		
+			E_OFF;
+			E_PWM;
+			EN_ON;
+			break;
+		case 7:
+			A_OFF;
+			A_PWM;
+			AN_ON;
+		
+			BN_OFF;
+			B_OFF;
+			
+			CN_OFF;
+			C_OFF;
+			
+			DN_OFF;
+			D_PWM;
+			D_ON;
+		
+			EN_OFF;
+			E_HALF_PWM;
+			E_ON;
+			break;
+		case 8:
+			A_OFF;
+			A_PWM;
+			AN_ON;
+		
+			BN_OFF;
+			B_OFF;
+			
+			CN_OFF;
+			C_OFF;
+			
+			DN_OFF;
+			D_OFF;
+		
+			EN_OFF;
+			E_PWM;
+			E_ON;
+			break;
+		case 9:
+			AN_OFF;
+			A_HALF_PWM;
+			A_ON;
+		
+			B_OFF;
+			B_PWM;
+			BN_OFF;
+			
+			CN_OFF;
+			C_OFF;
+			
+			DN_OFF;
+			D_OFF;
+		
+			EN_OFF;
+			E_PWM;
+			E_ON;
+			break;
+		case 0:
+			AN_OFF;
+			A_PWM;
+			A_ON;
+		
+			B_OFF;
+			B_PWM;
+			BN_OFF;
+			
+			CN_OFF;
+			C_OFF;
+			
+			DN_OFF;
+			D_OFF;
+		
+			EN_OFF;
+			E_OFF;
+			break;
+		default:
+			break;
+	}
+}
+

@@ -24,7 +24,7 @@
 
 /*tim1 period 20000 Hz*/
 #define PWM_DEFAULT_PERIOD    20000
-#define STEP_DEFSULT_PERIOD   20
+#define STEP_DEFSULT_PERIOD   10
 
 extern uint16_t CCR_Val;
 
