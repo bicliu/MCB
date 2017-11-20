@@ -720,7 +720,8 @@ void M5_StepEvent(void)
 	{
 		stepCount = (stepCount + 5 - 1) % 5;
 	}
-	M5_TenSteps();
+	//M5_TenSteps();
+	M5_StateStep();
 }
 #endif
 

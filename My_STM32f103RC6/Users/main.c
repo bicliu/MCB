@@ -55,6 +55,7 @@ int main(void)
 	M5_TIM1_Init(PWM_DEFAULT_PERIOD);
 	M5_TIM8_Init(PWM_DEFAULT_PERIOD);
 	M5_TIM6_Init(STEP_DEFSULT_PERIOD);
+	M5_StepInit();
 	M5_Start();
 
   while (1)
