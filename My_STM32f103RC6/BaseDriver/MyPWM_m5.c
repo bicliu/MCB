@@ -247,6 +247,7 @@ uint16_t pulseStep = 0, pulseCount = 0, stepCount = 0;
 uint8_t  m_direction = 0;
 //uint8_t startPulse_A = 0;
 //uint8_t pulseMove_A = 0;
+uint16_t u16TenStep[10][2];
 
 /* Private function prototypes -----------------------------------------------*/
 void M5_TIM1_RCC_Configuration(void);
@@ -624,6 +625,30 @@ void M5_TIM6_Init(uint32_t period)
 	//TIM_Cmd(TIM6, ENABLE);
 }
 
+void M5_SetStep(int i, uint16_t u16Off, uint16_t u16On)
+{
+	if(i > 0 && i < 10)
+	{
+		u16TenStep[i][0] = u16Off;
+		u16TenStep[i][1] = u16On;
+	}
+}
+
+void M5_StepInit(void)
+{
+	//                           turn off   ,turn on
+	M5_SetStep(0,0x1F8,0xE07);//000111111000,111000000111
+	M5_SetStep(1,0x1B9,0xE46);//000110111001,111001000110
+	M5_SetStep(2,0xB91,0x46E);//101110010001,010001101110
+	M5_SetStep(3,0xB13,0x4EC);//101100010011,010011101100
+	M5_SetStep(4,0xF03,0xFC); //111100000011,000011111100
+	M5_SetStep(5,0xE07,0x1F8);//111000000111,000111111000
+	M5_SetStep(6,0xE46,0x1B9);//111001000110,000110111001
+	M5_SetStep(7,0x46E,0xB91);//010001101110,101110010001
+	M5_SetStep(8,0x4EC,0xB13);//010011101100,101100010011
+	M5_SetStep(9,0xFC, 0xF03);//000011111100,111100000011
+}
+
 void M5_Start(void)
 {
 	/* TIM1&8 counter enable */
@@ -659,7 +684,7 @@ void M5_Start(void)
   * @retval None
   */
 #if 0
-void M5_Step(void)
+void M5_StepEvent(void)
 {
 	//uint16_t pulse = 0;
 	//capture = TIM_GetCapture1(TIM1);
@@ -685,7 +710,7 @@ void M5_Step(void)
 	//M5_StateStep();
 }
 #else
-void M5_Step(void)
+void M5_StepEvent(void)
 {
 	if(m_direction == 0)
 	{
@@ -698,7 +723,167 @@ void M5_Step(void)
 	M5_TenSteps();
 }
 #endif
-#if 1
+
+void M5_TurnOff(uint8_t i)
+{
+	switch(i)
+	{
+		case 0:
+			A_OFF;
+			break;
+		case 1:
+			B_OFF;
+			break;
+		case 2:
+			C_OFF;
+			break;
+		case 3:
+			D_OFF;
+			break;
+		case 4:
+			E_OFF;
+			break;
+		case 5:
+			F_OFF;
+			break;
+		case 6:
+			AN_OFF;
+			break;
+		case 7:
+			BN_OFF;
+			break;
+		case 8:
+			CN_OFF;
+			break;
+		case 9:
+			DN_OFF;
+			break;
+		case 10:
+			EN_OFF;
+			break;
+		case 11:
+			FN_OFF;
+			break;
+		default:
+			break;
+	}
+}
+
+void M5_SetCompare(int i, uint8_t ui8Per)
+{
+	uint16_t ui16Pulse = 0;
+	if(ui8Per > 100)
+		ui8Per = 100;
+	ui16Pulse = (uint16_t) (((uint32_t) (100 - ui8Per) * (TimerPeriod - 1)) / 100);
+	switch(i)
+	{
+		case 0 :
+			TIM_SetCompare1(TIM1, ui16Pulse);
+			break;
+		case 1 :
+			TIM_SetCompare2(TIM1, ui16Pulse);
+			break;
+		case 2 :
+			TIM_SetCompare3(TIM1, ui16Pulse);
+			break;
+		case 3 :
+			TIM_SetCompare2(TIM8, ui16Pulse);
+			break;
+		case 4 :
+			TIM_SetCompare3(TIM8, ui16Pulse);
+			break;
+		case 5 :
+			TIM_SetCompare1(TIM8, ui16Pulse);
+			break;
+		default:
+			break;
+	}
+}
+
+void M5_TurnOn(uint8_t i)
+{
+	switch(i)
+	{
+		case 0:
+			A_ON;
+			break;
+		case 1:
+			B_ON;
+			break;
+		case 2:
+			C_ON;
+			break;
+		case 3:
+			D_ON;
+			break;
+		case 4:
+			E_ON;
+			break;
+		case 5:
+			F_ON;
+			break;
+		case 6:
+			AN_ON;
+			break;
+		case 7:
+			BN_ON;
+			break;
+		case 8:
+			CN_ON;
+			break;
+		case 9:
+			DN_ON;
+			break;
+		case 10:
+			EN_ON;
+			break;
+		case 11:
+			FN_ON;
+			break;
+		default:
+			break;
+	}
+}
+
+
+void M5_StateStep(void)
+{
+	uint16_t u16TurnOff = 0, u16TurnOn = 0;
+	uint8_t i = 0;
+	
+	TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_OCMode_PWM1);
+
+	TIM_SelectOCxM(TIM8, TIM_Channel_1, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM8, TIM_Channel_2, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM8, TIM_Channel_3, TIM_OCMode_PWM1);	
+	
+	u16TurnOff = u16TenStep[stepCount][0];
+	u16TurnOn = u16TenStep[stepCount][1];
+	
+	for(i = 0; i < 12; i++)
+	{
+		if( 1 == ((u16TurnOff & (1 << i)) >> i) )
+		{
+			M5_TurnOff(i);
+		}
+	}
+	
+	for(i = 0; i < 6; i++)
+	{
+		M5_SetCompare(i, 50);
+	}
+	
+	for(i = 0; i < 12; i++)
+	{
+		if( 1 == ((u16TurnOn & (1 << i)) >> i) )
+		{
+			M5_TurnOn(i);
+		}
+	}
+}
+#if 0
 /*
 	The following Table  describes the steps states:
               -------------------------------------------------------------------------------
@@ -953,7 +1138,7 @@ void M5_StateStep(void)
 			break;
 	}
 }
-#else
+//#else
 /*
 	The following Table  describes the steps states:
               -------------------------------------------------------------------------------

@@ -31,7 +31,9 @@ extern uint16_t CCR_Val;
 void M5_TIM1_Init(uint32_t period);
 void M5_TIM8_Init(uint32_t period);
 void M5_TIM6_Init(uint32_t period);
-void M5_Step(void);
+void M5_StepEvent(void);
+void M5_StepInit(void);
+void M5_SetStep(int i, uint16_t u16Off, uint16_t u16On);
 void M5_Start(void);
 
 #ifdef __cplusplus
