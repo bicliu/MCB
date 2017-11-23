@@ -184,6 +184,32 @@ void TIM6_IRQHandler(void)
 }
 
 /**
+  * @brief  TIM1 CC IT Handler.
+  * @param  None
+  * @retval None
+  */
+void TIM1_CC_IRQHandler(void)
+{
+}
+
+/**
+  * @brief  TIM2 CC IT Handler.
+  * @param  None
+  * @retval None
+  */
+void TIM2_IRQHandler(void)
+{
+}
+
+void TIM3_IRQHandler(void)
+{
+}
+
+void TIM4_IRQHandler(void)
+{
+}
+
+/**
   * @}
   */ 
 
