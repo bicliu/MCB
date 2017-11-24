@@ -3,6 +3,8 @@ Output/
 Listing/
 Listings/
 Objects/
+Lis/
+Obj/
 *.uvopt
 *.uvoptx
 *.uvgui.Administrator
@@ -12,6 +14,7 @@ Objects/
 *.uvgui.DELL
 *.uvguix.DELL
 *.uvgui_DELL.bak
+*.saved_uv4
 JLinkSettings.ini
 JLinkLog.txt
 
