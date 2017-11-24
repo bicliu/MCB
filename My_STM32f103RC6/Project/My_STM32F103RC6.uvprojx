@@ -548,6 +548,16 @@
               <FileType>1</FileType>
               <FilePath>..\BaseDriver\MyPWM_m5.c</FilePath>
             </File>
+            <File>
+              <FileName>MyUsart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BaseDriver\MyUsart.c</FilePath>
+            </File>
+            <File>
+              <FileName>MyPWM.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\BaseDriver\MyPWM.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
