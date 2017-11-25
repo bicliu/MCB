@@ -28,6 +28,10 @@ char  step5_status = M5_IDLE;
 uint16_t last_adc_value = 0;
 uint16_t adc_value = 0;
 
+#define M5_PWM_PERIOD  20000
+#define SystemCoreClock 72000000
+uint16_t u16M5PWMPulsePer1 = 0;
+
 void TIM8_PWM_Init(u16 arr,u16 psc)
 {  
 	 GPIO_InitTypeDef GPIO_InitStructure;
@@ -83,12 +87,157 @@ GPIO_Init(GPIOA,&GPIO_InitStructure);
    
 }
 
+void M5_TIM1_Init(uint32_t period)
+{
+  GPIO_InitTypeDef GPIO_InitStructure;
+  TIM_TimeBaseInitTypeDef	TIM_TimeBaseStructure;
+  TIM_OCInitTypeDef  TIM_OCInitStructure;
+  uint16_t u16M5PWMArr = 0;
+
+	/* System Clocks Configuration */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);// 
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA , ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB , ENABLE);
+
+  /* GPIO Configuration */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;  
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA,&GPIO_InitStructure);
+
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+  GPIO_Init(GPIOB,&GPIO_InitStructure);
+	
+  /* TIM1 Configuration ---------------------------------------------------
+   Generate 7 PWM signals with 4 different duty cycles:
+   TIM1CLK = SystemCoreClock, Prescaler = 0, TIM1 counter clock = SystemCoreClock
+   SystemCoreClock is set to 72 MHz for Low-density, Medium-density, High-density
+   and Connectivity line devices and to 24 MHz for Low-Density Value line and
+   Medium-Density Value line devices
+   
+   The objective is to generate 7 PWM signal at 17.57 KHz:
+     - TIM1_Period = (SystemCoreClock / (17570 * (psc+1))) - 1
+   The Timer pulse is calculated as follows:
+     - ChannelxPulse = DutyCycle * (TIM1_Period - 1) / 100
+  ----------------------------------------------------------------------- */
+  /* Compute the value to be set in ARR regiter to generate signal frequency at 17.57 Khz */
+  //TimerPeriod = (SystemCoreClock / 17570 ) - 1;
+	u16M5PWMArr = (SystemCoreClock / period ) - 1;
+
+	u16M5PWMPulsePer1 = (uint16_t) (((uint32_t) 1 * (u16M5PWMArr - 1)) / 100);
+
+  /* Time Base configuration */
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_Period = u16M5PWMArr;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+
+  TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
+
+  /* Channel 1, 2,3 and 4 Configuration in PWM mode */
+  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+  TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Enable;
+  TIM_OCInitStructure.TIM_Pulse = u16M5PWMPulsePer1*50;
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
+  TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
+  TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
+  TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCIdleState_Reset;
+
+  TIM_OC1Init(TIM1, &TIM_OCInitStructure);
+
+  TIM_OCInitStructure.TIM_Pulse = u16M5PWMPulsePer1*50;
+  TIM_OC2Init(TIM1, &TIM_OCInitStructure);
+
+  TIM_OCInitStructure.TIM_Pulse = u16M5PWMPulsePer1*50;
+  TIM_OC3Init(TIM1, &TIM_OCInitStructure);
+
+	/* TIM1 Arr reload Enable */
+	TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable); 
+	TIM_OC2PreloadConfig(TIM1, TIM_OCPreload_Enable);
+	TIM_OC3PreloadConfig(TIM1, TIM_OCPreload_Enable);
+	TIM_ARRPreloadConfig(TIM1, ENABLE);
+}
+
+void M5_TIM8_Init(uint32_t period)
+{
+  GPIO_InitTypeDef GPIO_InitStructure;
+  TIM_TimeBaseInitTypeDef	TIM_TimeBaseStructure;
+  TIM_OCInitTypeDef  TIM_OCInitStructure;
+  uint16_t u16M5PWMArr = 0;
+
+  /* System Clocks Configuration */
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8, ENABLE);// 
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC , ENABLE);  //使能GPIO外设时钟使能
+
+  /* GPIO Configuration */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;  
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOC,&GPIO_InitStructure);
+
+  GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_0 | GPIO_Pin_1;
+  GPIO_Init(GPIOB,&GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+  GPIO_Init(GPIOA,&GPIO_InitStructure);
+
+  /* TIM8 Configuration ---------------------------------------------------
+   Generate 7 PWM signals with 4 different duty cycles:
+   TIM1CLK = SystemCoreClock, Prescaler = 0, TIM1 counter clock = SystemCoreClock
+   SystemCoreClock is set to 72 MHz for Low-density, Medium-density, High-density
+   and Connectivity line devices and to 24 MHz for Low-Density Value line and
+   Medium-Density Value line devices
+   
+   The objective is to generate 7 PWM signal at 17.57 KHz:
+     - TIM1_Period = (SystemCoreClock / 17570) - 1
+   The Timer pulse is calculated as follows:
+     - ChannelxPulse = DutyCycle * (TIM1_Period - 1) / 100
+  ----------------------------------------------------------------------- */
+
+  /* Time Base configuration */
+  TIM_TimeBaseStructure.TIM_Prescaler = 0;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_Period = u16M5PWMArr;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+
+  TIM_TimeBaseInit(TIM8, &TIM_TimeBaseStructure);
+
+  /* Channel 1, 2,3 and 4 Configuration in PWM mode */
+  TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+  TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+  TIM_OCInitStructure.TIM_OutputNState = TIM_OutputNState_Enable;
+  TIM_OCInitStructure.TIM_Pulse = u16M5PWMPulsePer1*50;
+  TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
+  TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCNPolarity_High;
+  TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;
+  TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCIdleState_Reset;
+
+  TIM_OC1Init(TIM8, &TIM_OCInitStructure);
+
+  TIM_OCInitStructure.TIM_Pulse = u16M5PWMPulsePer1*50;
+  TIM_OC2Init(TIM8, &TIM_OCInitStructure);
+
+  TIM_OCInitStructure.TIM_Pulse = u16M5PWMPulsePer1*50;
+  TIM_OC3Init(TIM8, &TIM_OCInitStructure);
+
+	/* TIM1 Arr reload Enable */
+	TIM_OC1PreloadConfig(TIM8, TIM_OCPreload_Enable); 
+	TIM_OC2PreloadConfig(TIM8, TIM_OCPreload_Enable);
+	TIM_OC3PreloadConfig(TIM8, TIM_OCPreload_Enable);
+	//TIM_OC4PreloadConfig(TIM8, TIM_OCPreload_Enable);
+	TIM_ARRPreloadConfig(TIM8, ENABLE);
+	
+}
+
+
 void TIM1_PWM_Init(u16 arr,u16 psc)
 {  
 	 GPIO_InitTypeDef GPIO_InitStructure;
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	TIM_OCInitTypeDef  TIM_OCInitStructure;
-	TIM_BDTRInitTypeDef      TIM_BDTRInitStructure;
+	//TIM_BDTRInitTypeDef      TIM_BDTRInitStructure;
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);// 
  	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA , ENABLE);  //使能GPIO外设时钟使能
@@ -470,10 +619,10 @@ void STEP5_pwm_disable(){
 
 void STEP5_pwm_set_fre(int fre){
 	pwm_fre = fre;
-	//TIM1_PWM_Init(pwm_fre,0);	
-	//TIM8_PWM_Init(pwm_fre,0);	
-	TIM1_PWM_Init(399,8);	
-	TIM8_PWM_Init(399,8);	//clay test
+	//TIM1_PWM_Init(399,8);	
+	//TIM8_PWM_Init(399,8);	//clay test
+	M5_TIM1_Init(M5_PWM_PERIOD);
+	M5_TIM8_Init(M5_PWM_PERIOD);
 }
 
 void STEP5_pwm_current(char percent){
@@ -484,10 +633,6 @@ void STEP5_pwm_current(char percent){
 		}
 }
 
-
-
-
-	   
 		   
 //初始化ADC
 //这里我们仅以规则通道为例
