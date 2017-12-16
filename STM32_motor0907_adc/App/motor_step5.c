@@ -31,63 +31,12 @@ uint16_t adc_value = 0;
 #define M5_PWM_PERIOD  20000
 #define SystemCoreClock 72000000
 uint16_t u16M5PWMPulsePer1 = 0;
-
-void TIM8_PWM_Init(u16 arr,u16 psc)
-{  
-	 GPIO_InitTypeDef GPIO_InitStructure;
-	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-	TIM_OCInitTypeDef  TIM_OCInitStructure;
-	TIM_BDTRInitTypeDef      TIM_BDTRInitStructure;
-
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8, ENABLE);// 
- 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC , ENABLE);  //使能GPIO外设时钟使能
-	                                                                     	
-
-GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8;
-GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;  
-GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-GPIO_Init(GPIOC,&GPIO_InitStructure);
-
-GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_0 | GPIO_Pin_1;
-GPIO_Init(GPIOB,&GPIO_InitStructure);
-GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-GPIO_Init(GPIOA,&GPIO_InitStructure);
-	
-	TIM_TimeBaseStructure.TIM_Period = arr; //设置在下一个更新事件装入活动的自动重装载寄存器周期的值	 80K
-	TIM_TimeBaseStructure.TIM_Prescaler =psc; //设置用来作为TIMx时钟频率除数的预分频值  不分频
-	TIM_TimeBaseStructure.TIM_ClockDivision = 0; //设置时钟分割:TDTS = Tck_tim
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;//TIM_CounterMode_CenterAligned3;//TIM_CounterMode_Up;  //TIM向上计数模式
-	TIM_TimeBaseInit(TIM8, &TIM_TimeBaseStructure); //根据TIM_TimeBaseInitStruct中指定的参数初始化TIMx的时间基数单位
-
- 
-	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2; //选择定时器模式:TIM脉冲宽度调制模式2
-	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; //比较输出使能
-	TIM_OCInitStructure.TIM_Pulse = 0; //设置待装入捕获比较寄存器的脉冲值
-	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High; //输出极性:TIM输出比较极性高
-		TIM_OCInitStructure.TIM_OCNPolarity= TIM_OCNPolarity_High;//TIM_OCNPolarity_Low;//TIM_OCNPolarity_High
-		TIM_OCInitStructure.TIM_OutputNState= TIM_OutputNState_Enable;
-		TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;//TIM_OCIdleState_Reset
-		TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;//TIM_OCNIdleState_Reset //fail to set high
-
-	TIM_OC1Init(TIM8, &TIM_OCInitStructure);  //根据TIM_OCInitStruct中指定的参数初始化外设TIMx
-	TIM_OC2Init(TIM8, &TIM_OCInitStructure);  //根据TIM_OCInitStruct中指定的参数初始化外设TIMx
-	TIM_OC3Init(TIM8, &TIM_OCInitStructure);  //根据TIM_OCInitStruct中指定的参数初始化外设TIMx
+//uint16_t u16TenStep[10][2];
+uint16_t u16M5Phase_ON[10];
+uint16_t u16M5Phase_OFF[10];
 
 
-
-  TIM_CtrlPWMOutputs(TIM8,ENABLE);	//MOE 主输出使能	
-
-	TIM_OC1PreloadConfig(TIM8, TIM_OCPreload_Enable);  //CH1预装载使能	 
-	TIM_OC2PreloadConfig(TIM8, TIM_OCPreload_Enable);  //CH1预装载使能	 
-	TIM_OC3PreloadConfig(TIM8, TIM_OCPreload_Enable);  //CH1预装载使能	 
-
-	TIM_ARRPreloadConfig(TIM8, ENABLE); //使能TIMx在ARR上的预装载寄存器
-	
-	TIM_Cmd(TIM8, ENABLE);  //使能TIM1
-   
-}
-
-void M5_TIM1_Init(uint32_t period)
+void M5_TIM1_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
   TIM_TimeBaseInitTypeDef	TIM_TimeBaseStructure;
@@ -122,7 +71,7 @@ void M5_TIM1_Init(uint32_t period)
   ----------------------------------------------------------------------- */
   /* Compute the value to be set in ARR regiter to generate signal frequency at 17.57 Khz */
   //TimerPeriod = (SystemCoreClock / 17570 ) - 1;
-	u16M5PWMArr = (SystemCoreClock / period ) - 1;
+	u16M5PWMArr = (SystemCoreClock / M5_PWM_PERIOD ) - 1;
 
 	u16M5PWMPulsePer1 = (uint16_t) (((uint32_t) 1 * (u16M5PWMArr - 1)) / 100);
 
@@ -160,7 +109,7 @@ void M5_TIM1_Init(uint32_t period)
 	TIM_ARRPreloadConfig(TIM1, ENABLE);
 }
 
-void M5_TIM8_Init(uint32_t period)
+void M5_TIM8_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
   TIM_TimeBaseInitTypeDef	TIM_TimeBaseStructure;
@@ -231,103 +180,29 @@ void M5_TIM8_Init(uint32_t period)
 	
 }
 
+void M5_TIM6_Config(uint32_t period)
+{
+  TIM_TimeBaseInitTypeDef	TIM_TimeBaseStructure;
+  uint16_t u16M5PWMArr = 0;
 
-void TIM1_PWM_Init(u16 arr,u16 psc)
-{  
-	 GPIO_InitTypeDef GPIO_InitStructure;
-	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-	TIM_OCInitTypeDef  TIM_OCInitStructure;
-	//TIM_BDTRInitTypeDef      TIM_BDTRInitStructure;
-
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);// 
- 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA , ENABLE);  //使能GPIO外设时钟使能
-	                                                                     	
-GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10;
-GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;  
-GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-GPIO_Init(GPIOA,&GPIO_InitStructure);
-
-GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
-GPIO_Init(GPIOB,&GPIO_InitStructure);
+  /* System Clocks Configuration */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
+  
+  u16M5PWMArr = (SystemCoreClock / period ) - 1;
 	
-	TIM_TimeBaseStructure.TIM_Period = arr; //设置在下一个更新事件装入活动的自动重装载寄存器周期的值	 80K
-	TIM_TimeBaseStructure.TIM_Prescaler =psc; //设置用来作为TIMx时钟频率除数的预分频值  不分频
-	TIM_TimeBaseStructure.TIM_ClockDivision = 0; //设置时钟分割:TDTS = Tck_tim
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;//TIM_CounterMode_CenterAligned3;//TIM_CounterMode_Up;  //TIM向上计数模式
-	TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure); //根据TIM_TimeBaseInitStruct中指定的参数初始化TIMx的时间基数单位
+	/* Time Base configuration */
+  TIM_TimeBaseStructure.TIM_Prescaler = 99;
+  TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_Period = u16M5PWMArr;
+  TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
 
-	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2; //选择定时器模式:TIM脉冲宽度调制模式2
-	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; //比较输出使能
-	TIM_OCInitStructure.TIM_Pulse = 0; //设置待装入捕获比较寄存器的脉冲值
-	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High; //输出极性:TIM输出比较极性高
-		TIM_OCInitStructure.TIM_OCNPolarity= TIM_OCNPolarity_High;//TIM_OCNPolarity_High;//TIM_OCNPolarity_Low; //TIM_OCPolarity_Low TIM_OCPolarity_High
-		TIM_OCInitStructure.TIM_OutputNState= TIM_OutputNState_Enable;
-		TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Set;//TIM_OCIdleState_Reset
-		TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Set;//TIM_OCNIdleState_Reset //fail to set high
+  TIM_TimeBaseInit(TIM6, &TIM_TimeBaseStructure);
 
-	TIM_OC1Init(TIM1, &TIM_OCInitStructure);  //根据TIM_OCInitStruct中指定的参数初始化外设TIMx
-	TIM_OC2Init(TIM1, &TIM_OCInitStructure);
-	TIM_OC3Init(TIM1, &TIM_OCInitStructure);
-
-
-  TIM_CtrlPWMOutputs(TIM1,ENABLE);	//MOE 主输出使能	
-
-	TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable);  //CH1预装载使能	 
-	TIM_OC2PreloadConfig(TIM1, TIM_OCPreload_Enable);  //CH1预装载使能	 
-	TIM_OC3PreloadConfig(TIM1, TIM_OCPreload_Enable);  //CH1预装载使能	 
-	
-	TIM_ARRPreloadConfig(TIM1, ENABLE); //使能TIMx在ARR上的预装载寄存器
-	
-	TIM_Cmd(TIM1, ENABLE);  //使能TIM1   
+  /* TIM IT enable */
+  TIM_ITConfig(TIM6, TIM_IT_Update | TIM_IT_Trigger, ENABLE);
+  
 }
-
-void TIM6_Configuration(uint16_t interval)
-	{
-		TIM_TimeBaseInitTypeDef  TIM6_TimeBaseStructure;
-//		TIM_OCInitTypeDef  TIM_OCInitStructure;
-		uint16_t peroid,scaler;
-	/* TIM6 clock enable */
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
-//					peroid = interval ;
-//		bak_peroid = peroid;
-//	scaler = 0;
-		//--FOR TIMER INT------
-	if ((interval > 999)){ // > 100ms
-			scaler = 7200;//ms
-			peroid = interval / 100 ;
-		}
-		else if ((interval > 99)&&(interval < 1000)){ // 100ms~10ms
-			scaler = 720; //100us
-			peroid = interval /10;
-		}
-		else { //< 1000 us
-			scaler = 72;//10us
-			peroid = interval ;
-		}
-
-
-	/* ---------------------------------------------------------------
-	TIM6CLK 即PCLK1=36MHz
-	TIM6CLK = 36 MHz, Prescaler = 7200, TIM6 counter clock = 5K,即改变一次为5K,周期就为10K
-	--------------------------------------------------------------- */
-	/* Time base configuration */
-	TIM6_TimeBaseStructure.TIM_Period = peroid;//设置在下一个更新事件装入活动的自动重装载寄存器周期的值	 计数到5000为500ms
-	TIM6_TimeBaseStructure.TIM_Prescaler =(scaler-1); //设置用来作为TIMx时钟频率除数的预分频值  10Khz的计数频率  
-	TIM6_TimeBaseStructure.TIM_ClockDivision = 0; //设置时钟分割:TDTS = Tck_tim
-	TIM6_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  //TIM向上计数模式
-	TIM_TimeBaseInit(TIM6, &TIM6_TimeBaseStructure); //根据TIM_TimeBaseInitStruct中指定的参数初始化TIMx的时间基数单位
-	
-	/* Enables the Update event for TIM6 */
-	//TIM_UpdateDisableConfig(TIM6,ENABLE); 	//使能 TIM6 更新事件 
-	
-	/* TIM IT enable */
-	TIM_ITConfig(  //使能或者失能指定的TIM中断
-		TIM6, //TIM6
-		TIM_IT_Update  |  //TIM 中断源
-		TIM_IT_Trigger,   //TIM 触发中断源 
-		ENABLE  //使能
-		);
-	}
 
 void Tim6_int_init(void){
 
@@ -344,8 +219,170 @@ void Tim6_int_init(void){
 // ms per step 
 void STEP5_set_speed(int speed){
 //	target_speed = speed;
-	TIM6_Configuration(speed);//25 MStarget_speed*10
+	//TIM6_Configuration(speed);//25 MStarget_speed*10
+	M5_TIM6_Config(speed);
 }
+
+void M5_Phase_TurnOff(uint8_t i)
+{
+	switch(i)
+	{
+		case 0:
+			A_PHASE_H_OFF;
+			break;
+		case 1:
+			B_PHASE_H_OFF;
+			break;
+		case 2:
+			C_PHASE_H_OFF;
+			break;
+		case 3:
+			D_PHASE_H_OFF;
+			break;
+		case 4:
+			E_PHASE_H_OFF;
+			break;
+		case 5:
+			F_PHASE_H_OFF;
+			break;
+		case 6:
+			AN_PHASE_L_OFF;
+			break;
+		case 7:
+			BN_PHASE_L_OFF;
+			break;
+		case 8:
+			CN_PHASE_L_OFF;
+			break;
+		case 9:
+			DN_PHASE_L_OFF;
+			break;
+		case 10:
+			EN_PHASE_L_OFF;
+			break;
+		case 11:
+			FN_PHASE_L_OFF;
+			break;
+		default:
+			break;
+		}
+
+}
+
+void M5_SetCompare(int i, uint8_t ui8Per)
+{
+	uint16_t ui16Pulse = 0;
+	if(ui8Per > 100)
+		ui8Per = 100;
+	ui16Pulse = (uint16_t) (ui8Per * u16M5PWMPulsePer1);
+	switch(i)
+	{
+		case 0 :
+			TIM_SetCompare1(TIM1, ui16Pulse);
+			break;
+		case 1 :
+			TIM_SetCompare2(TIM1, ui16Pulse);
+			break;
+		case 2 :
+			TIM_SetCompare3(TIM1, ui16Pulse);
+			break;
+		case 3 :
+			TIM_SetCompare2(TIM8, ui16Pulse);
+			break;
+		case 4 :
+			TIM_SetCompare3(TIM8, ui16Pulse);
+			break;
+		case 5 :
+			TIM_SetCompare1(TIM8, ui16Pulse);
+			break;
+		default:
+			break;
+	}
+}
+
+void M5_Phase_TurnOn(uint8_t i)
+{
+	switch(i)
+	{
+		case 0:
+			A_PHASE_H_ON;
+			break;
+		case 1:
+			B_PHASE_H_ON;
+			break;
+		case 2:
+			C_PHASE_H_ON;
+			break;
+		case 3:
+			D_PHASE_H_ON;
+			break;
+		case 4:
+			E_PHASE_H_ON;
+			break;
+		case 5:
+			F_PHASE_H_ON;
+			break;
+		case 6:
+			AN_PHASE_L_ON;
+			break;
+		case 7:
+			BN_PHASE_L_ON;
+			break;
+		case 8:
+			CN_PHASE_L_ON;
+			break;
+		case 9:
+			DN_PHASE_L_ON;
+			break;
+		case 10:
+			EN_PHASE_L_ON;
+			break;
+		case 11:
+			FN_PHASE_L_ON;
+			break;
+		default:
+			break;
+	}
+}
+
+void M5_StateStep(void)
+{
+	uint16_t u16TurnOff = 0, u16TurnOn = 0;
+	uint8_t i = 0;
+	
+	TIM_SelectOCxM(TIM1, TIM_Channel_1, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM1, TIM_Channel_2, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM1, TIM_Channel_3, TIM_OCMode_PWM1);
+
+	TIM_SelectOCxM(TIM8, TIM_Channel_1, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM8, TIM_Channel_2, TIM_OCMode_PWM1);
+	TIM_SelectOCxM(TIM8, TIM_Channel_3, TIM_OCMode_PWM1);	
+	
+	u16TurnOff = u16M5Phase_OFF[step5_phase];
+	u16TurnOn = u16M5Phase_ON[step5_phase];
+	
+	for(i = 0; i < 12; i++)
+	{
+		if( 1 == ((u16TurnOff & (1 << i)) >> i) )
+		{
+			M5_Phase_TurnOff(i);
+		}
+	}
+	
+	for(i = 0; i < 6; i++)
+	{
+		M5_SetCompare(i, 50);
+	}
+	
+	for(i = 0; i < 12; i++)
+	{
+		if( 1 == ((u16TurnOn & (1 << i)) >> i) )
+		{
+			M5_Phase_TurnOn(i);
+		}
+	}
+}
+
 
 void test_step10_test2(){
 	if(clock_wise){
@@ -621,8 +658,8 @@ void STEP5_pwm_set_fre(int fre){
 	pwm_fre = fre;
 	//TIM1_PWM_Init(399,8);	
 	//TIM8_PWM_Init(399,8);	//clay test
-	M5_TIM1_Init(M5_PWM_PERIOD);
-	M5_TIM8_Init(M5_PWM_PERIOD);
+	M5_TIM1_Init();
+	M5_TIM8_Init();
 }
 
 void STEP5_pwm_current(char percent){
